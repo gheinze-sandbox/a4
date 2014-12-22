@@ -239,5 +239,31 @@ public class AmortizationCalculatorTest {
         assertEquals("Monthly compound period, ceiling", expResult, result);
 
     }
+
+    
+    @Test
+    public void testPerDiem() {
+        System.out.println("perDiem");
+        Money loanAmount = new Money("100000.00", Currency.getInstance("CAD"), RoundingMode.CEILING);
+        double i = 12.0;
+        Money expResult = new Money("32.88");
+       
+        Money perDiemResult = AmortizationCalculator.getPerDiem(loanAmount, i);
+        
+        assertEquals("Per Diem", expResult, perDiemResult);
+    }
+    
+    @Test
+    public void testAdjustmentAmount() {
+        System.out.println("adjustment");
+        Money loanAmount = new Money("100000.00", Currency.getInstance("CAD"), RoundingMode.CEILING);
+        double i = 12.0;
+        int days = 7;
+        Money expResult = new Money("32.88").multiply(days);
+       
+        Money adjustmentResult = AmortizationCalculator.getAdjustmentAmount(loanAmount, i, days);
+        
+        assertEquals("Per Diem", expResult, adjustmentResult);
+    }
     
 }

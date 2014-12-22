@@ -303,6 +303,39 @@ public class AmortizationCalculator {
     }
 
     
+    private static final int DAYS_IN_A_YEAR = 365;
+
+    /**
+     * Daily interest rate for balance. Typically used to calculate the initial
+     * adjustment amount or late payments on payout. Assumes a constant 365 days
+     * per year, regardless of the year.
+     * 
+     * @param amount The balance upon which the rate is to be applied.
+     * @param annualInterestRatePercent input annual interest rate as a percent (ie 8.25 for 8.25%)
+     * @return 
+     */
+    public static Money getPerDiem(Money amount, double annualInterestRatePercent) {
+        return amount.multiply(annualInterestRatePercent * 0.01 / DAYS_IN_A_YEAR);
+    }
+    
+    
+    /**
+     * Daily interest rate for balance multiplied by the number of days. Note that this does not
+     * calculate the interest for a period. It calculates it for a day and then multiplies out.
+     * The difference is that fractional units will accumulate. For example, if the raw daily interest
+     * rate were $32.111, this would be rounded up to a daily interest rate of $32.12. Applied 
+     * for 100 days: $321.20, (not $32.111 * 10 days = $321.11).
+     * 
+     * @param amount The balance upon which the daily rate is to be applied.
+     * @param annualInterestRatePercent input annual interest rate as a percent (ie 8.25 for 8.25%)
+     * @param days Days for which the daily interest rate should be applied.
+     * @return 
+     */
+    public static Money getAdjustmentAmount(Money amount, double annualInterestRatePercent, int days) {
+        return getPerDiem(amount, annualInterestRatePercent).multiply(days);
+    }
+    
+    
     /**
      * Given an amount and an annual interest rate, return the monthly payment
      * for an interest only loan.
