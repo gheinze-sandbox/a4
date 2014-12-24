@@ -58,55 +58,53 @@ public class AmortizationCalculator {
     
     /* ===============================
      * Abstract class holding supplied and calculated values required for calculating
-     * subsequent payments, whethere interest only or amortized.
+     * subsequent payments, whether interest-only or amortized.
      */
     private static abstract class AmortizationIterator implements Iterator<ScheduledPayment> {
 
-        protected final Money zeroMoney;  // A zero Money amount with the same currency and rounding mode as the loan amount
-        
+        // provided
         protected final AmortizationAttributes terms;
         
-        // Short-cuts to "term" attributes
-        protected final Money regularPayment;
+        // Short-cuts to provided "term" attributes
+        protected final Money requestedPeriodicPayment;
         protected final Currency currency;
         protected final RoundingMode roundingMode;
         
-        // TODO: this only considers monthly payments, not, say, twice a month
+        // A zero Money amount with the same currency and rounding mode as the loan amount
+        protected final Money zeroMoney;
+        
+        // TODO: this only considers monthly payments but should handle periodic payments
+        // (weekly, every two weeks, every two months, ...)
+        
+        
+        // State members:
         
         /*
          * The calculatedMonthlyPayment is the computed monthly payment. It could be less
          * then the specified monthly payment if there is a desire to pay extra principal
-         * during each payment period. It is also maintained as a double (fractional values)
-         * to minimize the drift which would start occurring with repeated rounding.
-         * 
-         * calculatedMonthlyPaymentMoney holds the "rounded" version used for display
+         * during each payment period.
          */
-        protected final double calculatedMonthlyPayment; // minimum that needs to be paid monthly
-        protected final Money calculatedMonthlyPaymentMoney;
+        protected final Money calculatedPeriodicPayment;
         
-        // Numerical methods: can't necessarily compare a balance amount to zero because of
-        // representation issues, so truncate after a certain number of digits pre-comparison
-        protected final double truncationFactor;
+        // Counter of payments already calculated
+        protected int paymentNumber = 0;
         
-        protected int paymentNumber = 0;  // Counter of payments already calculated
-        
-        // Maintained as a double to minimize the drift which would start occurring with repeated rounding
-        protected double balance;
+        protected Money remainingBalance;
 
         
         public AmortizationIterator(AmortizationAttributes terms) {
             
             this.terms = terms;
             
-            // Set short-cuts
-            this.regularPayment = terms.getRegularPayment();
+            // Set short-cuts to input fiels
+            this.requestedPeriodicPayment = terms.getRegularPayment();
             this.currency = terms.getLoanAmount().getCurrency();
             this.roundingMode = terms.getLoanAmount().getRoundingMode();
             
             // Initialize balance to loan amount
-            this.balance = terms.getLoanAmount().getAmount().doubleValue();
+            this.remainingBalance = new Money(terms.getLoanAmount());
 
-            calculatedMonthlyPayment = terms.isInterestOnly() ?
+            double calculatedPaymentValue = terms.isInterestOnly() ?
                     
                     getInterestOnlyMonthlyPayment(terms.getLoanAmount().getAmount().doubleValue(), terms.getInterestRate()) :
                     
@@ -116,13 +114,10 @@ public class AmortizationCalculator {
                         terms.getCompoundingPeriodsPerYear(),
                         terms.getAmortizationPeriodMonths() );
             
-            calculatedMonthlyPaymentMoney = new Money(BigDecimal.valueOf(calculatedMonthlyPayment), currency, roundingMode);
+            calculatedPeriodicPayment = new Money(BigDecimal.valueOf(calculatedPaymentValue), currency, roundingMode);
                     
             // The regular payment has to be at least the calculated payment, if not more
-            assert !calculatedMonthlyPaymentMoney.greaterThan(regularPayment);
-            
-            // Two decimal places, truncate after 5 digits
-            truncationFactor = Math.pow(10.0, currency.getDefaultFractionDigits() * 2 + 1);
+            assert !calculatedPeriodicPayment.greaterThan(requestedPeriodicPayment);
             
             zeroMoney = new Money("0", currency, roundingMode);
             
@@ -137,7 +132,7 @@ public class AmortizationCalculator {
         @Override
         public boolean hasNext() {
             return  paymentNumber < terms.getTermInMonths() &&
-                    Math.round(balance * truncationFactor ) > 0L
+                    remainingBalance.greaterThan(zeroMoney)
                     ;
         }
 
@@ -155,21 +150,15 @@ public class AmortizationCalculator {
     /* =============================== */
     
     /**
-     * Iterator for an interest-only payment schedule. If over payments are
-     * specified, principal will be reduced
+     * Iterator for an interest-only payment schedule. By definition this is interest-only
+     * so the payments will always be the calculated amount and any requested regular 
+     * payment will be ignored.
      * 
      */
     public static class InterestOnlyIterator extends AmortizationIterator {
 
-        private final Money extraPrincipal;
-        
         public InterestOnlyIterator(AmortizationAttributes terms) {
             super(terms);
-            if ( regularPayment.greaterThan(calculatedMonthlyPaymentMoney) ) {
-                extraPrincipal = regularPayment.subtract(calculatedMonthlyPaymentMoney);
-            } else {
-                extraPrincipal = zeroMoney;
-            }
         }
 
         
@@ -183,36 +172,12 @@ public class AmortizationCalculator {
             ScheduledPayment payment = new ScheduledPayment();
             payment.setPaymentNumber(paymentNumber);
             payment.setPaymentDate(date);
-            payment.setInterest(calculatedMonthlyPaymentMoney);
+            payment.setInterest(calculatedPeriodicPayment);
 
-            // Normally, the regular payment is pure interest and it should be the same as the calculated payment
-            if (extraPrincipal.equals(zeroMoney)) {
-                payment.setPrincipal(zeroMoney);
-                payment.setBalance(terms.getLoanAmount());
-                return payment;
-            }
+            // The regular payment is pure interest and it should be the same as the calculated payment
+            payment.setPrincipal(zeroMoney);
+            payment.setBalance(terms.getLoanAmount());
             
-            // An overpayment of interest needs to reduce the balance
-            
-            Money balanceMoney = new Money(BigDecimal.valueOf(balance), currency, roundingMode);
-
-            if (extraPrincipal.greaterThan(balanceMoney)) {
-                // The loan is being completely paid out. Just pay the remaining
-                // principal of the loan, and not the surplas principal being.
-                payment.setPrincipal(balanceMoney);
-                balance = 0.0;
-            } else {
-                // Pay down the loan with the extra principal supplied
-                payment.setPrincipal(extraPrincipal);
-                balance = balance - extraPrincipal.getAmount().doubleValue();
-            }
-
-            // Since the balance has been adjusted, recompute
-            balanceMoney = new Money(BigDecimal.valueOf(balance), currency, roundingMode);
-            
-            payment.setBalance(balanceMoney);
-            
-            // System.out.println("IO: " + payment);
             return payment;
             
         }
@@ -225,9 +190,7 @@ public class AmortizationCalculator {
     public static class AmortizedIterator extends AmortizationIterator {         
         
         private final double j;   // period rate: ie rate until compounding trigger (rate for 6 months for semi-annual, rate for 1 month for monthly)
-        private final double overpayment;
-        private double thePayment;
-        private final Money thePaymentMoney;
+        private final Money periodicPayment;
         
         public AmortizedIterator(AmortizationAttributes terms) {
             super(terms);
@@ -240,14 +203,9 @@ public class AmortizationCalculator {
             
             j = getPeriodRate(terms.getInterestRate(), terms.getCompoundingPeriodsPerYear());
 
-            thePayment = regularPayment.getAmount().doubleValue();
-            if ( Math.round( (thePayment - calculatedMonthlyPayment) * truncationFactor ) <= 0L ) {
-                // The payment has to be at least as much as the calculated monthly payment
-                thePayment = calculatedMonthlyPayment;
-            }
-            
-            overpayment = thePayment - calculatedMonthlyPayment;
-            thePaymentMoney = new Money( BigDecimal.valueOf(thePayment), currency, roundingMode);
+            periodicPayment = calculatedPeriodicPayment.greaterThan(requestedPeriodicPayment) ?
+                    calculatedPeriodicPayment :
+                    requestedPeriodicPayment;
             
         }
         
@@ -259,22 +217,21 @@ public class AmortizationCalculator {
 
             LocalDate date = terms.getAdjustmentDate().plusMonths(paymentNumber);
 
-            double computedInterest = balance * j;
+            // Interest amounts rounding take precedence
+            double computedInterest = remainingBalance.getAmount().doubleValue() * j;
             Money interest = new Money( BigDecimal.valueOf(computedInterest), currency, roundingMode);
             
-            double principal = thePayment - computedInterest + overpayment;
+            // The periodic payment is consistent, so anything that is not interest is principal
+            Money principalMoney = periodicPayment.subtract(interest);
             
-            balance -= principal;
-            Money balanceMoney = new Money(BigDecimal.valueOf(balance), currency, roundingMode);
-            
-            Money principalMoney = thePaymentMoney.subtract(interest);
+            remainingBalance = remainingBalance.subtract(principalMoney);
             
             ScheduledPayment payment = new ScheduledPayment();
             payment.setPaymentNumber(paymentNumber);
             payment.setPaymentDate(date);
             payment.setInterest(interest);
             payment.setPrincipal(principalMoney);
-            payment.setBalance(balanceMoney);
+            payment.setBalance(remainingBalance);
             
             return payment;
             

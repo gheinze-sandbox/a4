@@ -82,58 +82,6 @@ public class AmortizationCalculatorTest {
     }
 
     
-    @Test
-    public void testGetPaymentsInterestOnlyExtraPrincipal() {
-        System.out.println("getPaymentsInterestOnlyExtraPrincipal");
-        
-        Money amount = new Money("100.00");
-        double rate = 12.0;
-
-        AmortizationAttributes terms = new AmortizationAttributes();
-        terms.setInterestOnly(true);
-        terms.setLoanAmount(amount);
-        terms.setTermInMonths(12);
-        terms.setInterestRate(rate);
-        
-        double interestOnlyMonthlyPayment = AmortizationCalculator
-                .getInterestOnlyMonthlyPayment(
-                        amount.getAmount().doubleValue(), rate
-                );
-        
-        Money installment = new Money(BigDecimal.valueOf(interestOnlyMonthlyPayment));
-        installment = installment.add(new Money("15.00"));
-        terms.setRegularPayment(installment);
-        
-        LocalDate today = LocalDate.now();
-        LocalDate adjDate = LocalDate.now();
-        
-        int dayOfMonth = today.getDayOfMonth();
-        if (1 != dayOfMonth) {
-            if (dayOfMonth > 15) {
-              adjDate = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
-              adjDate = adjDate.plusMonths(1);
-            } else if (dayOfMonth < 15) {
-              adjDate = LocalDate.of(today.getYear(), today.getMonthValue(), 15);
-            }
-        }
-        
-        terms.setStartDate(today);
-        terms.setAdjustmentDate(adjDate);
-        
-        Iterator<ScheduledPayment> result = AmortizationCalculator.getPayments(terms);
-        
-        int resultCount = 0;
-        Money interestTotal = new Money("0.00");
-        while(result.hasNext()) {
-            resultCount++;
-            ScheduledPayment payment = result.next();
-            interestTotal = interestTotal.add(payment.getInterest());
-        }
-        assertEquals("Interest Only payment count -extra principal", 7, resultCount);
-        assertEquals("Interest Only interest total", new Money("7"), interestTotal);
-
-    }
-
     
     @Test
     public void testGetPaymentsAmortized() {
@@ -182,7 +130,63 @@ public class AmortizationCalculatorTest {
             //System.out.println("" + payment);
         }
         assertEquals("Amortized payment count", termInMonths, resultCount);
-        assertEquals("Amortized Interest total", new Money("45681.32"), interestTotal);
+        assertEquals("Amortized Interest total", new Money("45681.34"), interestTotal);
+
+    }
+
+
+    /**
+     * Sum of principal payments should match original balance minus final balance.
+     * 
+     */
+    @Test
+    public void testGetPaymentsAmortizedConsistency() {
+        System.out.println("testGetPaymentsAmortizedConsistency");
+        
+        String originalBalanceString = "20000.00";
+        
+        Money orignalBalance = new Money(originalBalanceString, Currency.getInstance("CAD"), RoundingMode.HALF_UP);
+        double rate = 10.0;
+        int termInMonths = 12;
+        
+        AmortizationAttributes terms = new AmortizationAttributes();
+        terms.setInterestOnly(false);
+        terms.setLoanAmount(orignalBalance);
+        terms.setTermInMonths(termInMonths);
+        terms.setAmortizationPeriodMonths(10 * 12); // 10 years
+        terms.setCompoundingPeriodsPerYear(2);
+        terms.setInterestRate(rate);
+        
+        double amortizedMonthlyPayment = AmortizationCalculator.getAmortizedMonthlyPayment(orignalBalance, rate, 2, terms.getAmortizationPeriodMonths());
+        Money regularPayment = new Money(BigDecimal.valueOf(amortizedMonthlyPayment), orignalBalance.getCurrency(), orignalBalance.getRoundingMode());
+        terms.setRegularPayment(regularPayment);
+        
+        terms.setStartDate(LocalDate.of(2014, 1, 1));
+        terms.setAdjustmentDate(LocalDate.of(2014, 1, 1));
+        
+        
+        Iterator<ScheduledPayment> result = AmortizationCalculator.getPayments(terms);
+        
+        int resultCount = 0;
+        Money principalTotal = new Money("0.00");
+        
+        while(result.hasNext()) {
+            
+            resultCount++;
+            ScheduledPayment payment = result.next();
+            principalTotal = principalTotal.add(payment.getPrincipal());
+            
+            assertEquals("Remaining balance is original balance minus principal paid so far " + resultCount
+                    ,orignalBalance.subtract(principalTotal)
+                    ,payment.getBalance()
+            );
+            
+            assertEquals("Interest + Principal matches periodic payment"
+                    ,payment.getPayment()
+                    ,payment.getInterest().add(payment.getPrincipal())
+            );
+
+        }
 
     }
 
