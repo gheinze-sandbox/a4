@@ -12,17 +12,19 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * Utilities to support an amortization calculator.
+ * Amortization calculation utilities.
  * 
  * @author Glenn Heinze
  */
 @Service
 public class AmortizationService {
-
     
-    private static final int MONTHS_PER_YEAR = 12;
-    
-  
+    /**
+     * Retrieve a list of scheduled payments.
+     * 
+     * @param amAttrs
+     * @return 
+     */
     public List<ScheduledPayment> getAmortizationSchedule(final AmortizationAttributes amAttrs) {
 
         List<ScheduledPayment> paymentList = new ArrayList<>();
@@ -37,9 +39,13 @@ public class AmortizationService {
     }
     
 
-    
 
-    
+    /**
+     * The periodic payment required to fulfill request attributes.
+     * 
+     * @param amAttrs
+     * @return 
+     */
     public Money getMonthlyPayment(final AmortizationAttributes amAttrs) {
         return AmortizationCalculator.getMonthlyPayment(amAttrs);
     }
