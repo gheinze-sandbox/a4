@@ -37,8 +37,7 @@ public class MoneyTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testBigDecimalConstructorNullAmount() {
-        BigDecimal amount = null;
-        new Money(amount, Currency.getInstance("USD"), RoundingMode.CEILING);
+        new Money((BigDecimal)null, Currency.getInstance("USD"), RoundingMode.CEILING);
         fail("Money amount may not be null");
     }
     
@@ -183,7 +182,7 @@ public class MoneyTest {
         assertTrue("Addition of negative amount", sum.equals(moneyCadExp));
         
         // Different currencies should throw an exception
-        sum = moneyUsd.add(moneyCad);
+        moneyUsd.add(moneyCad);
         
         fail("Addition: different currencies should throw an exception");
         
@@ -221,7 +220,7 @@ public class MoneyTest {
         
         // Different currencies should throw an exception
         try {
-            sum = moneyUsd111.subtract(moneyCad333);
+            moneyUsd111.subtract(moneyCad333);
             fail("Subtraction: different currencies should throw an exception");
         } catch(CurrencyMismatchRuntimeException cmm) {
         }

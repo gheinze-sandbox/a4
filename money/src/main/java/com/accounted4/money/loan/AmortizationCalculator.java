@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 
 
@@ -165,6 +166,10 @@ public class AmortizationCalculator {
         @Override
         public ScheduledPayment next() {
             
+            if (paymentNumber >= terms.getTermInMonths()) {
+                throw new NoSuchElementException("Attempting to retrieve payment beyond term.");
+            }
+            
             paymentNumber++;
             
             LocalDate date = terms.getAdjustmentDate().plusMonths(paymentNumber);
@@ -212,6 +217,10 @@ public class AmortizationCalculator {
         
         @Override
         public ScheduledPayment next() {
+            
+            if (paymentNumber >= terms.getTermInMonths()) {
+                throw new NoSuchElementException("Attempting to retrieve payment beyond term.");
+            }
             
             paymentNumber++;
 

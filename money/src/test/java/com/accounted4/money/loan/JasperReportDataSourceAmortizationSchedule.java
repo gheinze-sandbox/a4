@@ -61,9 +61,9 @@ public class JasperReportDataSourceAmortizationSchedule {
         Collection<ScheduledPayment> samplePaymentCollection =
                 JasperReportDataSourceAmortizationSchedule.getSamplePaymentCollection();
         
-        for (ScheduledPayment payment : samplePaymentCollection) {
+        samplePaymentCollection.stream().forEach((payment) -> {
             System.out.println(payment.toString());
-        }
+        });
         
     }
     
