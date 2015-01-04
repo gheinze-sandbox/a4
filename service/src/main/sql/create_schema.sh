@@ -16,8 +16,8 @@
 #     ALTER USER postgres SET search_path TO tia,public;
 
 BUILD_DIR=../build
-CREATE_LIST=$BUILD_DIR/create_list.txt
-CREATE_SCRIPT=create_schema_objects.sql
+CREATE_LIST=create_list.txt
+CREATE_SCRIPT=$BUILD_DIR/create_schema_objects.sql
 
 mkdir -p $BUILD_DIR
 

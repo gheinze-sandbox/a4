@@ -60,7 +60,12 @@ public class AmortizationServiceJasperReport {
         customParameters.put("rate", amAttrs.getInterestRate());
         
         Money monthlyPayment = AmortizationCalculator.getMonthlyPayment(amAttrs);
+        Money requestedMonthlyPayment = amAttrs.getRegularPayment();
+        if (null != requestedMonthlyPayment && requestedMonthlyPayment.greaterThan(monthlyPayment)) {
+            monthlyPayment = requestedMonthlyPayment;
+        }
         customParameters.put("monthlyPayment", monthlyPayment);
+        
         customParameters.put("term", amAttrs.getTermInMonths());
         if (!amAttrs.isInterestOnly()) {
             customParameters.put("amortizationYears", amAttrs.getAmortizationPeriodMonths() / MONTHS_PER_YEAR);
