@@ -232,7 +232,9 @@ public class AmortizationCalculator {
             
             // The periodic payment is consistent, so anything that is not interest is principal
             Money principalMoney = periodicPayment.subtract(interest);
-            
+            if (principalMoney.greaterThan(remainingBalance)) {
+                principalMoney = new Money(remainingBalance);
+            }            
             remainingBalance = remainingBalance.subtract(principalMoney);
             
             ScheduledPayment payment = new ScheduledPayment();

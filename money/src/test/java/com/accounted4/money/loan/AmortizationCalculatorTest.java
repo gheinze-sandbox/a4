@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Iterator;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -180,6 +181,53 @@ public class AmortizationCalculatorTest {
                     ,orignalBalance.subtract(principalTotal)
                     ,payment.getBalance()
             );
+            
+            assertEquals("Interest + Principal matches periodic payment"
+                    ,payment.getPayment()
+                    ,payment.getInterest().add(payment.getPrincipal())
+            );
+
+        }
+
+    }
+
+    
+    /**
+     * Payments should not result in a negative balance.
+     * 
+     */
+    @Test
+    public void testGetPaymentsAmortizedNoNegativeBalance() {
+        System.out.println("testGetPaymentsAmortizedNoNegativeBalance");
+        
+        String originalBalanceString = "20000.00";
+        
+        Money orignalBalance = new Money(originalBalanceString, Currency.getInstance("CAD"), RoundingMode.HALF_UP);
+        double rate = 10.0;
+        int termInMonths = 12;
+        
+        AmortizationAttributes terms = new AmortizationAttributes();
+        terms.setInterestOnly(false);
+        terms.setLoanAmount(orignalBalance);
+        terms.setTermInMonths(termInMonths);
+        terms.setAmortizationPeriodMonths(10 * 12); // 10 years
+        terms.setCompoundingPeriodsPerYear(2);
+        terms.setInterestRate(rate);
+        terms.setRegularPayment(new Money("5000"));
+        terms.setStartDate(LocalDate.of(2014, 1, 1));
+        terms.setAdjustmentDate(LocalDate.of(2014, 1, 1));
+        
+        
+        Iterator<ScheduledPayment> result = AmortizationCalculator.getPayments(terms);
+        
+        int resultCount = 0;
+        Money zero = new Money("0.00");
+        
+        while(result.hasNext()) {
+            
+            ScheduledPayment payment = result.next();
+            
+            assertTrue("Balance should be above zero", payment.getBalance().compareTo(zero) >= 0);
             
             assertEquals("Interest + Principal matches periodic payment"
                     ,payment.getPayment()
