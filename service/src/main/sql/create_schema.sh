@@ -15,9 +15,10 @@
 #
 #     ALTER USER postgres SET search_path TO tia,public;
 
-BUILD_DIR=../build
+BUILD_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../../target && pwd )
+
 CREATE_LIST=create_list.txt
-CREATE_SCRIPT=$BUILD_DIR/create_schema_objects.sql
+CREATE_SCRIPT=$BUILD_DIR/recreate_schemas.sql   
 
 mkdir -p $BUILD_DIR
 
@@ -44,4 +45,5 @@ done < $CREATE_LIST
 # =============================================
 psql -p 5432 -e a4 postgres < $CREATE_SCRIPT
 
+echo Create script generated to $CREATE_SCRIPT
 # pause

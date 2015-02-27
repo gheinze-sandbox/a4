@@ -1,104 +1,138 @@
-
 -- These definitions are copied from:
--- http://docs.spring.io/spring-security/site/docs/3.2.0.CI-SNAPSHOT/reference/htmlsingle/#appendix-schema
+-- http://docs.spring.io/spring-security/site/docs/4.0.0.CI-SNAPSHOT/reference/htmlsingle/#appendix-schema
 
 
 -- User schema:
 
-create table users(
-    username varchar(64) not null primary key,
-    password varchar(64) not null,
-    enabled boolean not null
+CREATE TABLE users(
+
+    username VARCHAR(64) NOT NULL PRIMARY KEY
+   ,password VARCHAR(64) NOT NULL
+   ,enabled  BOOLEAN     NOT NULL
+
 )
 ;
 
-create table authorities (
-    username varchar(64) not null,
-    authority varchar(64) not null,
-    constraint fk_authorities_users foreign key(username) references users(username)
+CREATE UNIQUE INDEX users_username_uk ON users(username)
+;
+
+COMMENT ON TABLE users IS 'Used by Spring Security for authenticating users who have accounts on the application.';
+
+
+CREATE TABLE authorities (
+
+    username  VARCHAR(64) NOT NULL
+   ,authority VARCHAR(64) NOT NULL
+
+   ,CONSTRAINT authorities_username_fk FOREIGN KEY(username) REFERENCES users(username)
+
 )
 ;
 
-create unique index ix_auth_username on authorities (username,authority)
+CREATE UNIQUE INDEX authorities_username_authority_uk ON authorities(username,authority)
 ;
+
+COMMENT ON TABLE authorities IS 'Contains the list of Roles associated with a user.';
 
 
 -- Group authorities:
 
-create table groups (
-  id SERIAL primary key,
-  group_name varchar(64) not null
+CREATE TABLE groups (
+   id         SERIAL PRIMARY KEY
+  ,group_name VARCHAR(64) NOT NULL
 )
 ;
 
-create table group_authorities (
-  group_id SERIAL primary key,
-  authority varchar(64) not null,
-  constraint fk_group_authorities_group foreign key(group_id) references groups(id)
+--COMMENT ON TABLE groups IS '';
+
+
+CREATE TABLE group_authorities (
+
+    group_id  SERIAL PRIMARY KEY
+   ,authority VARCHAR(64) NOT NULL
+
+   ,CONSTRAINT group_authorities_group_id_fk FOREIGN KEY(group_id) REFERENCES groups(id)
+
 )
 ;
 
-create table group_members (
-  id SERIAL primary key,
-  username varchar(64) not null,
-  group_id bigint not null,
-  constraint fk_group_members_group foreign key(group_id) references groups(id)
+
+CREATE TABLE group_members (
+
+    id SERIAL PRIMARY KEY
+   ,username  VARCHAR(64) NOT NULL
+   ,group_id  BIGINT NOT NULL
+
+   CONSTRAINT group_members_group_id_fk FOREIGN KEY(group_id) REFERENCES groups(id)
 )
 ;
 
 -- Remember me
 
-create table persistent_logins (
-  username varchar(64) not null,
-  series varchar(64) primary key,
-  token varchar(64) not null,
-  last_used timestamp not null
+CREATE TABLE persistent_logins (
+    username  VARCHAR(64) NOT NULL
+   ,series    VARCHAR(64) PRIMARY KEY,
+   ,token     VARCHAR(64) NOT NULL,
+   ,last_used TIMESTAMP   NOT NULL
 )
 ;
+
 
 -- ACL
 
-create table acl_sid(
-  id bigserial not null primary key,
-  principal boolean not null,
-  sid varchar(100) not null,
-  constraint unique_uk_1 unique(sid,principal)
+CREATE TABLE acl_sid(
+
+    id        BIGSERIAL NOT NULL primary key
+   ,principal BOOLEAN   NOT NULL
+   ,sid       VARCHAR(100) NOT NULL
+
+   ,CONSTRAINT acl_sid_sid_principal_uk UNIQUE(sid, principal)
 )
 ;
 
-create table acl_class(
-  id bigserial not null primary key,
-  class varchar(100) not null,
-  constraint unique_uk_2 unique(class)
+
+CREATE TABLE acl_class(
+
+    id    BIGSERIAL    NOT NULL PRIMARY KEY
+   ,class VARCHAR(100) NOT NULL
+
+   ,CONSTRAINT acl_class_class_uk UNIQUE(class)
 )
 ;
 
-create table acl_object_identity(
-  id bigserial primary key,
-  object_id_class bigint not null,
-  object_id_identity bigint not null,
-  parent_object bigint,
-  owner_sid bigint,
-  entries_inheriting boolean not null,
-  constraint unique_uk_3 unique(object_id_class,object_id_identity),
-  constraint foreign_fk_1 foreign key(parent_object) references acl_object_identity(id),
-  constraint foreign_fk_2 foreign key(object_id_class) references acl_class(id),
-  constraint foreign_fk_3 foreign key(owner_sid) references acl_sid(id)
+
+CREATE TABLE acl_object_identity(
+
+    id                 BIGSERIAL PRIMARY KEY
+   ,object_id_class    BIGINT NOT NULL
+   ,object_id_identity BIGINT NOT NULL
+   ,parent_object      BIGINT
+   ,owner_sid          BIGINT
+   ,entries_inheriting BOOLEAN NOT NULL
+
+   ,CONSTRAINT acl_object_identity_class_identity_uk UNIQUE(object_id_class, object_id_identity)
+   ,CONSTRAINT acl_object_identity_parent_fk FOREIGN KEY(parent_object)   REFERENCES acl_object_identity(id)
+   ,CONSTRAINT acl_object_identity_object_fk FOREIGN KEY(object_id_class) REFERENCES acl_class(id)
+   ,CONSTRAINT acl_object_identity_owner_fk  FOREIGN KEY(owner_sid)       REFERENCES acl_sid(id)
+
 )
 ;
 
-create table acl_entry(
-  id bigserial primary key,
-  acl_object_identity bigint not null,
-  ace_order int not null,
-  sid bigint not null,
-  mask integer not null,
-  granting boolean not null,
-  audit_success boolean not null,
-  audit_failure boolean not null,
-  constraint unique_uk_4 unique(acl_object_identity,ace_order),
-  constraint foreign_fk_4 foreign key(acl_object_identity)
-      references acl_object_identity(id),
-  constraint foreign_fk_5 foreign key(sid) references acl_sid(id)
+
+CREATE TABLE acl_entry(
+
+    id                  BIGSERIAL PRIMARY KEY
+   ,acl_object_identity BIGINT NOT NULL
+   ,ace_order           INT NOT NULL
+   ,sid                 BIGINT NOT NULL
+   ,mask                INTEGER NOT NULL
+   ,granting            BOOLEAN NOT NULL
+   ,audit_success       BOOLEAN NOT NULL
+   ,audit_failure       BOOLEAN NOT NULL
+
+   ,CONSTRAINT acl_entry_object_order_uk UNIQUE(acl_object_identity, ace_order)
+   ,CONSTRAINT acl_entry_object_fk FOREIGN KEY(acl_object_identity) REFERENCES acl_object_identity(id)
+   ,CONSTRAINT acl_entry_sid_fk    FOREIGN KEY(sid)                 REFERENCES acl_sid(id)
+
 )
 ;
