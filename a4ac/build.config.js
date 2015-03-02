@@ -65,7 +65,6 @@ module.exports = {
       'vendor/angular/angular.js',
       'vendor/ui-bootstrap-custom/ui-bootstrap-custom-0.1.0-SNAPSHOT.js',
       'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-      'vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min.js',
       'vendor/angular-sanitize/angular-sanitize.min.js', // required by dialogs
       'vendor/angular-dialog-service/dist/dialogs.min.js',
       'vendor/angular-ui-router/release/angular-ui-router.js',
