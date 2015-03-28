@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<!--/*
+
+The "header" fragment: the "header" div will be inserted into the "header"
+section of the active layout.
+
+The content for this page is the menu bar.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Menu</title>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+    </head>
+
+    <body>
+        
+        <!--/* The replaceable fragment */-->
+        <div class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+            
+            <div class="container">
+                
+                <!--/* Logo */-->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle btn-success" data-toggle="collapse" data-target=".nav-collapse" >
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">A4</a>
+                </div>
+                
+                <!--/* Remainder of menu bar */-->
+                <div class="navbar-collapse collapse">
+                    
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#" th:href="@{/}">Home</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Tools <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" th:href="@{/tools/amortizationCalculator}">Amortization Calculator</a></li>
+                            </ul>
+                        </li>                        
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    
+                    <!--/* Signin / Signout */-->
+                    <ul class="nav navbar-nav navbar-right">
+                        <li th:if="${#authentication}? ${#authorization.expression('!isAuthenticated()')}">
+                            <a href="/signin" th:href="@{/signin}">Sign in</a>
+                        </li>
+                        <li th:if="${#authentication}? ${#authorization.expression('isAuthenticated()')}">
+                            <a href="/logout" th:href="@{#}" onclick="$('#form').submit();">Logout</a>
+                            <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
+                        </li>
+                    </ul>
+                    
+                </div>
+                
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </body>
+</html>
