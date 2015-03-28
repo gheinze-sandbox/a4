@@ -1,6 +1,4 @@
-# Accounted4 Asset Management Application
-
-A collection of framework and tool investigations for web app building.
+# Accounted4 Asset Management
 
 *	_a4ac [abandoned]_  An AngularJs client calling REST-like services. Full-stack client (Node, npm, bower, grunt, jasmine)
 *	**asset-manager** [latest] Application framework using: SpringMVC, SpringSecurity, ThymeLeaf
