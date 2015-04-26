@@ -1,17 +1,8 @@
-# Accounted4 Asset Management
+# Sandbox for experimental code
 
-*	_a4ac [abandoned]_  An AngularJs client calling REST-like services. Full-stack client (Node, npm, bower, grunt, jasmine)
-*	**asset-manager** [latest] Application framework using: SpringMVC, SpringSecurity, ThymeLeaf
-*	**money** [libarary] Representing money, containing some amortization functions
-*	_service [abandoned]_ Spring REST-like server, can curl a request to generate a pdf amortization schedule
+*	_a4ac  An AngularJs client calling REST-like services. Full-stack client (Node, npm, bower, grunt, jasmine)
+*	_service Spring REST-like server, can curl a request to generate a pdf amortization schedule
 
-##asset-manager
-
-* install PostgreSQL
-* create the schema objects via src/main/sql/create_schema.sh (read the script to check about connect info)
-* build the "money" library first (mvn install) since "asset-manager" will be using the library
-* update src/main/resources.properties with appropriate db connect information
-* build the "asset-manager" (mvn install) to generate the war file for deployment on a web server
 
 ## service
 * mvn install
