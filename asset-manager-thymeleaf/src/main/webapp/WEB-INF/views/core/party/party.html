@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<!--/*
+
+A content fragment: the "content" div will be inserted into the "content"
+section of the active layout.
+
+The content for this page is relates to defining people, businesses, addresses,
+contact numbers, etc.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title th:text="#{view.party.title}">Party</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+    </head>
+
+    <body>
+        
+        <div class="container" th:fragment="content">
+            
+                <form class="form-horizontal" method="post" th:action="@{/core/party}" th:object="${partyForm}" >
+
+                    
+                    <!--/* Hidden modal display used to populate "notes" element of the form */-->
+                    <div th:replace="fragments/modalNote :: modalNote"></div>
+            
+                    
+                    <!--/* Show general error message when form contains errors */-->
+                    <th:block th:if="${#fields.hasErrors('${partyForm.*}')}">
+                        <div th:replace="fragments/alert :: alert (type='danger', message='Form contains errors. Please try again.')">Alert</div>
+                    </th:block>
+                    
+                    
+                    <fieldset>
+                        
+                        <legend>Party</legend>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('partyName')}? 'has-error'">
+                            <label for="inputPartyName" class="control-label col-lg-1">Name</label>
+                            <div class="col-lg-4">
+                                <input type="text" class="form-control" id="inputPartyName" placeholder="Party Name" th:field="*{partyName}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('partyName')}" th:errors="*{partyName}">Invalid party name</span>
+                            </div>
+                            <div class="col-lg-7">
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#noteModal">Notes</button>
+                            </div>
+                        </div> 
+                        
+                        <div class="form-group">
+                            <div class="col-lg-1"></div>
+                            <div class="col-lg-11">
+                                <input type="checkbox" name="inactive" th:field="*{record.inactive}"/>Inactive
+                            </div>
+                        </div>
+
+                        
+                        <!--/* Add action buttons depending on state of form. */-->
+                        <div th:replace="fragments/modeButtons :: modeButtons"></div>
+
+
+                    </fieldset>
+                    
+                </form>
+
+        </div>
+        
+    </body>
+    
+</html>

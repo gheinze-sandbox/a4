@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<!--/*
+
+A content fragment: the "address" div will be inserted into the enclosing
+section of the active layout.
+
+The content for this page is relates to defining an addresses.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title th:text="#{view.party.title}">Party</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+    </head>
+
+    <body>
+        
+        <div class="container" th:fragment="address">
+
+            <div>
+                
+                <form class="form-horizontal" method="post" th:action="@{/core/address}" th:object="${addressForm}" >
+                    
+                    <!--/* Show general error message when form contains errors */-->
+                    <th:block th:if="${#fields.hasErrors('${partyForm.*}')}">
+                        <div th:replace="fragments/alert :: alert (type='danger', message='Form contains errors. Please try again.')">Alert</div>
+                    </th:block>
+                    
+                    <fieldset>
+                        
+                        <legend>Address</legend>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('line1')}? 'has-error'">
+                            <label for="line1" class="col-lg-2 control-label">Line 1</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" id="line1" placeholder="Line 1" th:field="*{line1}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('line1')}" th:errors="*{line1}">Invalid address line 1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('line2')}? 'has-error'">
+                            <label for="line2" class="col-lg-2 control-label">Line 2</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" id="line2" placeholder="Line 2" th:field="*{line2}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('line2')}" th:errors="*{line2}">Invalid address line 2</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('city')}? 'has-error'">
+                            <label for="city" class="col-lg-2 control-label">City</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" id="line1" placeholder="City" th:field="*{city}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">Invalid city</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('province')}? 'has-error'">
+                            <label for="province" class="col-lg-2 control-label">Province</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" id="province" placeholder="Province" th:field="*{province}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('province')}" th:errors="*{province}">Invalid province</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('postalCode')}? 'has-error'">
+                            <label for="postalCode" class="col-lg-2 control-label">Postal Code</label>
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" th:field="*{postalCode}" />
+                                <span class="help-block" th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}">Invalid postal code</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" th:classappend="${#fields.hasErrors('notes')}? 'has-error'">
+                            <label for="notes" class="col-lg-2 control-label">Notes</label>
+                            <div class="col-lg-8">
+                                <span class="help-block" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}">Invalid note text</span>
+                                <textarea name="noteEditor" id="notes" rows="10" cols="80" th:field="*{notes}"/>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <button type="submit" class="btn btn-success">Save Address</button>
+                            </div>
+                        </div>
+                        
+                    </fieldset>
+                    
+
+                </form>
+
+            </div>
+            
+        </div>
+        
+    </body>
+    
+</html>

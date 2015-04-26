@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<!--/*
+
+The "modeButtons" fragment: the "modalButtons" div will be inserted into the active layout.
+
+The content for this page conditionally displays one of two sets of buttons:
+
+    Find, Save
+        or
+    Update, Delete
+
+Assumes the backing bean has a "record" attribute (RecordMetaData).
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Notes</title>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/summernote.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/summernote.min.css}"/>
+    </head>
+
+    <body>
+        
+        <!--/* The replaceable fragment */-->
+        <div id="modeButtons" th:fragment="modeButtons">
+            
+            <!-- Could create an enum of modes and states and build this dynamically -->
+            
+                        <div th:if="*{record.insertMode}">
+                            <div class="form-group">
+                                <div class="col-lg-offset-1 col-lg-11">
+                                    <button type="submit" class="btn btn-warning" name="findAction" value="find">Find</button>
+                                    <button type="submit" class="btn btn-success" name="saveAction" value="save">Save</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="*{record.editMode}">
+                            <div class="form-group">
+                                <div class="col-lg-offset-1 col-lg-11">
+                                    <button type="submit" class="btn btn-success" name="updateAction" value="update">Update</button>
+                                    <button type="submit" class="btn btn-danger" name="deleteAction" value="delete">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+            
+        </div>
+    
+    </body>
+    
+</html>

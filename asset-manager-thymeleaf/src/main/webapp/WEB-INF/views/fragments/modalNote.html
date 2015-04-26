@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<!--/*
+
+The "modalNote" fragment: the "modalNote" div will be inserted into the active layout.
+
+The content for this page is a Bootstrap modal dialog containing a "notes" textarea
+that can be populated with CKEditor.  Add:
+
+    <div class="container" th:replace="fragments/modalNote :: modalNote"></div>
+
+within a form backed by a bean with a "notes" attribute to have the model populated.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Notes</title>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/summernote.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/summernote.min.css}"/>
+    </head>
+
+    <body>
+        
+        <!--/* The replaceable fragment */-->
+        <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true" data-backdrop="static" th:fragment="modalNote">
+            
+            <script src="../../../resources/js/ckeditor/ckeditor.js" th:src="@{/resources/js/ckeditor/ckeditor.js}"></script>
+            
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="noteModalLabel">Notes</h4>
+                    </div>
+                    <div class="modal-body">
+                            <textarea name="notes" id="notes" rows="10" cols="80">
+                            </textarea>
+                            <script>
+                                CKEDITOR.replace( 'notes' );
+                            </script>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    
+    </body>
+    
+</html>
