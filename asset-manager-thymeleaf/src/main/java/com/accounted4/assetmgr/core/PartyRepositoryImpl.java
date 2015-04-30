@@ -2,24 +2,32 @@ package com.accounted4.assetmgr.core;
 
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
 import com.accounted4.assetmgr.useraccount.AppUserDetails;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
+
 /**
- *
+ * Database access layer for query Party (Person/Organization) information
+ * from a Postgres database.
  */
 @Repository
 public class PartyRepositoryImpl implements PartyRepository {
     
     private final NamedParameterJdbcTemplate jdbc;
+    private final PartyRowMapper partyRowMapper;
 
-
+    
     @Autowired
     public PartyRepositoryImpl(DataSource dataSource) {
         jdbc = new NamedParameterJdbcTemplate(dataSource);
+        partyRowMapper = new PartyRowMapper();
     }
 
     
@@ -28,19 +36,100 @@ public class PartyRepositoryImpl implements PartyRepository {
      * ===================================================================
      */
     private static final String INSERT_PARTY =
-            "INSERT INTO party(org_id, display_name, inactive, notes)" +
+            "INSERT INTO party(org_id, party_name, inactive, notes)" +
             "  VALUES(:orgId, :partyName, :inactive, :notes)"
             ;
 
+    /**
+     * {@inheritDoc}
+     * @param partyForm backing bean of the ui party form
+     */
     @Override
     public void save(PartyForm partyForm) {
+        
+        // most bind parameters can be retrieved directly from form attributes
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyForm);
-        AppUserDetails user = (AppUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        namedParameters.addValue("orgId", user.getOrgId());
+        
+        // these bind parameters are not available from the form and need to be manually added
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
         namedParameters.addValue("inactive", partyForm.getRecord().isInactive());
+        
         jdbc.update(INSERT_PARTY, namedParameters);
+        
+        // although we could be more efficient and use a "returning" clause to get the id and version
+        // (and using SimpleJdbcInsert), performing an extra query may be more portable across dbs
     }
 
 
+    /*
+     * ===================================================================
+     */
+    private static final String GET_PARTY_BY_ID = 
+            "SELECT * FROM party WHERE orgId = :orgId AND id = :id";
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PartyForm getPartyById(long id) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        return jdbc.queryForObject(GET_PARTY_BY_ID, namedParameters, partyRowMapper);
+    }
+
+    
+    /*
+     * ===================================================================
+     */
+    private static final String GET_PARTY_BY_NAME =
+            "SELECT * FROM party WHERE org_id = :orgId AND party_name = :partyName";
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PartyForm getPartyByKey(String partyName) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyName", partyName);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        return jdbc.queryForObject(GET_PARTY_BY_NAME, namedParameters, partyRowMapper);
+    }
+    
+
+    /*
+     * ===================================================================
+     */
+
+    // TODO: getAllParties (filtered by inactive)
+    //       getAllParties (case insensitive regex "like" on party name)
+
+    
+    
+    private enum PartyColumn {
+        id, version, inactive, party_name, notes;
+    }
+    
+    private class PartyRowMapper implements RowMapper<PartyForm> {
+
+        @Override
+        public PartyForm mapRow(ResultSet rs, int rowNum) throws SQLException {
+            
+            RecordMetaData recordMetaData = new RecordMetaData();
+            recordMetaData.setId(rs.getLong(PartyColumn.id.name()));
+            recordMetaData.setVersion(rs.getInt(PartyColumn.version.name()));
+            recordMetaData.setInactive(rs.getBoolean(PartyColumn.inactive.name()));
+            recordMetaData.setEditMode(true);
+            
+            PartyForm partyForm = new PartyForm();
+            partyForm.setPartyName(rs.getString(PartyColumn.party_name.name()));
+            partyForm.setNotes(rs.getString(PartyColumn.notes.name()));
+            
+            partyForm.setRecord(recordMetaData);
+            
+            return partyForm;
+            
+        }
+        
+    }
+    
     
 }

@@ -18,5 +18,15 @@ public class PartyServiceImpl implements PartyService {
     public void saveParty(PartyForm partyForm) {
         partyRepository.save(partyForm);
     }
+
+    @Override
+    public PartyForm getPartyById(long id) {
+        return partyRepository.getPartyById(id);
+    }
+
+    @Override
+    public PartyForm getPartyByKey(String partyName) {
+        return partyRepository.getPartyByKey(partyName);
+    }
     
 }
