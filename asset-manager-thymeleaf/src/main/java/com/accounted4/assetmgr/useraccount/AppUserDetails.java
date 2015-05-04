@@ -1,6 +1,7 @@
 package com.accounted4.assetmgr.useraccount;
 
 import java.util.Collection;
+import java.util.Objects;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -34,4 +35,30 @@ public class AppUserDetails extends User {
         this.emailAddress = account.getEmailAddress();
     }
     
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + this.orgId;
+        hash = 23 * hash + Objects.hashCode(this.fullyQualifiedAccountName);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AppUserDetails other = (AppUserDetails) obj;
+        if (this.orgId != other.orgId) {
+            return false;
+        }
+        if (!Objects.equals(this.fullyQualifiedAccountName, other.fullyQualifiedAccountName)) {
+            return false;
+        }
+        return true;
+    }
+
 }

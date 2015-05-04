@@ -1,7 +1,6 @@
 package com.accounted4.assetmgr.core;
 
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
-import com.accounted4.assetmgr.useraccount.AppUserDetails;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 
@@ -108,7 +106,7 @@ public class PartyRepositoryImpl implements PartyRepository {
         id, version, inactive, party_name, notes;
     }
     
-    private class PartyRowMapper implements RowMapper<PartyForm> {
+    private static class PartyRowMapper implements RowMapper<PartyForm> {
 
         @Override
         public PartyForm mapRow(ResultSet rs, int rowNum) throws SQLException {

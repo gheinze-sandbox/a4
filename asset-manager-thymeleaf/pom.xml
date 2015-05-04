@@ -19,6 +19,8 @@
         <!-- AssertJ is not a part of Spring IO platform, so the version must be provided explicitly -->
         <assertj-core-version>1.5.0</assertj-core-version>
         <jsdialect.version>1.0.2</jsdialect.version>
+        <findbugs.version>3.0.1</findbugs.version>
+        <javadoc.version>2.10.3</javadoc.version>
     </properties>
     
     <dependencyManagement>
@@ -256,4 +258,29 @@
         
     </build>
     
+    <reporting>
+
+        <plugins>
+
+            <!-- Findbugs -->        
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.version}</version>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+
+            <!-- Javadocs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadoc.version}</version>
+            </plugin>
+        
+        </plugins>
+        
+    </reporting>
+
 </project>
