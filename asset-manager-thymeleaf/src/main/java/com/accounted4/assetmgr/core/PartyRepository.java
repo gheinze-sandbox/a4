@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.core;
 
+import java.util.List;
+
 /**
  *
  */
@@ -30,5 +32,8 @@ public interface PartyRepository {
      * @return 
      */
     PartyForm getPartyByKey(String partyName);
+    
+    
+    List<PartyForm> findParties(PartyForm partyFormTemplate);
     
 }

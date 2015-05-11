@@ -26,7 +26,7 @@ public class HomeController {
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String handleHomePageRequest(Principal principal) {
-        return principal != null ? ViewRoute.HOME_SIGNED_IN : ViewRoute.HOME_NOT_SIGNED_IN;
+        return principal != null ? ViewRoute.HOME_SIGNED_IN : ("redirect:/signin"); //ViewRoute.HOME_NOT_SIGNED_IN;
     }
     
 }

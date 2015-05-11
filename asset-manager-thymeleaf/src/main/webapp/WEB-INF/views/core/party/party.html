@@ -45,7 +45,7 @@ contact numbers, etc.
                         <div class="form-group" th:classappend="${#fields.hasErrors('partyName')}? 'has-error'">
                             <label for="inputPartyName" class="control-label col-lg-1">Name</label>
                             <div class="col-lg-4">
-                                <input type="text" class="form-control" id="inputPartyName" placeholder="Party Name" th:field="*{partyName}" />
+                                <input type="text" class="form-control" id="inputPartyName" placeholder="Party Name" th:field="*{partyName}" autofocus="true"/>
                                 <span class="help-block" th:if="${#fields.hasErrors('partyName')}" th:errors="*{partyName}">Invalid party name</span>
                             </div>
                             <div class="col-lg-7">

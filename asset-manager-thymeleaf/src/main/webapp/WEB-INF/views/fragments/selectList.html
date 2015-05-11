@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<!--/*
+
+A content fragment: the "content" div will be inserted into the "content"
+section of the active layout.
+
+The content for this page is a search result: a list of urls.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title th:text="#{view.index.title}">Welcome!</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+    </head>
+
+    <body>
+        
+        <div class="container" th:fragment="content">
+            <div th:if="${#lists.isEmpty(selectList)}">No records found matching criteria</div>
+            <div th:if="${!#lists.isEmpty(selectList)}">
+                <table>
+                    <tr th:each="item : ${selectList}">
+                        <td th:text="${item.record.id}">1</td>
+                        <td><a href="#" th:text="${item.partyName}">PartyName</a></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </body>
+    
+</html>

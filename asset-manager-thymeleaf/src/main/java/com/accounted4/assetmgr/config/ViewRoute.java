@@ -18,6 +18,8 @@ public interface ViewRoute {
     static final String SIGN_IN            = "/core/auth/signin";
     static final String SIGN_UP            = "/core/auth/signup";
     
+    static final String SELECT_LIST        = "/fragments/selectList";
+    
     static final String PARTY              = "/core/party/party";
     
 }

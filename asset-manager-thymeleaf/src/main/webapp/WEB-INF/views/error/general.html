@@ -17,10 +17,14 @@ Controller errors route to this page through the ControllerAdvice ExceptionHandl
     </head>
     
     <body>
-        <div class="container">
+        
+        <div th:replace="fragments/header :: header">Header</div>
+        
+        <div class="container" th:fragment="content">
             <div th:replace="fragments/alert :: alert (type='danger', message=${errorMessage})">Error: Error</div>
             <div th:include="fragments/footer :: footer">&copy; 2015 Accounted4</div>
         </div>
+        
     </body>
     
 </html>

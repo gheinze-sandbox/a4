@@ -3,6 +3,7 @@ package com.accounted4.assetmgr.core;
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -97,8 +98,16 @@ public class PartyRepositoryImpl implements PartyRepository {
      * ===================================================================
      */
 
-    // TODO: getAllParties (filtered by inactive)
-    //       getAllParties (case insensitive regex "like" on party name)
+    private static final String FIND_PARTIES =
+            "SELECT * FROM party WHERE org_id = :orgId AND inactive = :inactive AND party_name ILIKE '%' || :partyName || '%'";
+    
+    @Override
+    public List<PartyForm> findParties(PartyForm partyFormTemplate) {
+        ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyFormTemplate);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        namedParameters.addValue("inactive", partyFormTemplate.getRecord().isInactive());
+        return jdbc.query(FIND_PARTIES, namedParameters, partyRowMapper);
+    }
 
     
     

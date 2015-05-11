@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.core;
 
+import java.util.List;
+
 /**
  *
  * @author gheinze
@@ -10,6 +12,8 @@ public interface PartyService {
     
     PartyForm getPartyById(long id);
     
-    PartyForm getPartyByKey(String partyName);
+    PartyForm getPartyByName(String partyName);
+    
+    List<PartyForm> findParties(PartyForm partyFormTemplate);
 
 }

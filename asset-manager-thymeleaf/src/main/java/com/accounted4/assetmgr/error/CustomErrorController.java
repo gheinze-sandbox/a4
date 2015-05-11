@@ -1,5 +1,6 @@
 package com.accounted4.assetmgr.error;
 
+import com.accounted4.assetmgr.support.web.Layout;
 import java.text.MessageFormat;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ class CustomErrorController {
     /**
      * Display an error page, as defined in web.xml <code>custom-error</code> element.
      */
+    @Layout(value = "core/layouts/default")
     @RequestMapping("generalError")
     public String generalError(HttpServletRequest request, HttpServletResponse response, Model model) {
         

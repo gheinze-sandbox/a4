@@ -1,5 +1,6 @@
 package com.accounted4.assetmgr.core;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,13 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public PartyForm getPartyByKey(String partyName) {
+    public PartyForm getPartyByName(String partyName) {
         return partyRepository.getPartyByKey(partyName);
+    }
+
+    @Override
+    public List<PartyForm> findParties(PartyForm partyFormTemplate) {
+        return partyRepository.findParties(partyFormTemplate);
     }
     
 }

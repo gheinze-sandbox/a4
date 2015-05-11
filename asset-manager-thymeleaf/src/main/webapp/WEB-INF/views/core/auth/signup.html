@@ -32,7 +32,7 @@ The content for this page is a sign up page for creating an account.
                 <div class="form-group" th:classappend="${#fields.hasErrors('accountName')}? 'has-error'">
                     <label for="inputAccountName" class="col-lg-2 control-label">Account</label>
                     <div class="col-lg-10">
-                        <input type="text" class="form-control" id="inputAccountName" placeholder="Account Name" th:field="*{accountName}" />
+                        <input type="text" class="form-control" id="inputAccountName" placeholder="Account Name" th:field="*{accountName}"  autofocus="true"/>
                         <span class="help-block" th:if="${#fields.hasErrors('accountName')}" th:errors="*{accountName}">Incorrect account name</span>
                     </div>
                 </div>
