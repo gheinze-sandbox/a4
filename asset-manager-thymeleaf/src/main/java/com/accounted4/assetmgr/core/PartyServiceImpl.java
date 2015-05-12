@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.core;
 
+import com.accounted4.assetmgr.config.ViewRoute;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,17 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public List<PartyForm> findParties(PartyForm partyFormTemplate) {
         return partyRepository.findParties(partyFormTemplate);
+    }
+
+    @Override
+    public List<SelectItem> generateUrlList(List<PartyForm> parties) {
+        List<SelectItem> result = new ArrayList<>();
+        parties
+                .stream()
+                .map( (partyForm)-> new SelectItem("/core/party/" + partyForm.getRecord().getId(), partyForm.getPartyName()) )
+                .forEach((item) -> { result.add(item); })
+                ;
+        return result;
     }
     
 }

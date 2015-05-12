@@ -16,4 +16,6 @@ public interface PartyService {
     
     List<PartyForm> findParties(PartyForm partyFormTemplate);
 
+    List<SelectItem> generateUrlList(List<PartyForm> parties);
+
 }

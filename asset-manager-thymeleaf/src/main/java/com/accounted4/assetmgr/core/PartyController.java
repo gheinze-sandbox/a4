@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +32,16 @@ public class PartyController {
         model.addAttribute(new PartyForm());
         return ViewRoute.PARTY;
     }
+    
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/party/{id}")
+    public String getParty(Model model, @PathVariable long id) {
+        PartyForm party = partyService.getPartyById(id);
+        model.addAttribute(party);
+        return ViewRoute.PARTY;
+    }
+
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party", method = RequestMethod.POST, params="saveAction")
@@ -64,7 +74,7 @@ public class PartyController {
 
         
         ModelAndView mav = new ModelAndView(ViewRoute.SELECT_LIST);
-        mav.addObject("selectList", parties);
+        mav.addObject("selectList", partyService.generateUrlList(parties));
         
         return mav;
         

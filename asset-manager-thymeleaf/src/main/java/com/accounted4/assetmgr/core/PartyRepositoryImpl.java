@@ -64,7 +64,7 @@ public class PartyRepositoryImpl implements PartyRepository {
      * ===================================================================
      */
     private static final String GET_PARTY_BY_ID = 
-            "SELECT * FROM party WHERE orgId = :orgId AND id = :id";
+            "SELECT * FROM party WHERE org_id = :orgId AND id = :id";
 
     /**
      * {@inheritDoc}

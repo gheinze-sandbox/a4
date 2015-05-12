@@ -25,10 +25,9 @@ The content for this page is a search result: a list of urls.
         <div class="container" th:fragment="content">
             <div th:if="${#lists.isEmpty(selectList)}">No records found matching criteria</div>
             <div th:if="${!#lists.isEmpty(selectList)}">
-                <table>
+                <table class="table table-striped">
                     <tr th:each="item : ${selectList}">
-                        <td th:text="${item.record.id}">1</td>
-                        <td><a href="#" th:text="${item.partyName}">PartyName</a></td>
+                        <td><a th:href="@{${item.url}}" th:text="${item.urlDisplay}">PartyName</a></td>
                     </tr>
                 </table>
             </div>
