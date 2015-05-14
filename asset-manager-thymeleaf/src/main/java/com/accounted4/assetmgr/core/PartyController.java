@@ -15,21 +15,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
  */
 @Controller
+@SessionAttributes("partyForm")
 public class PartyController {
     
     @Autowired PartyService partyService;
     
+    private static final String FORM_BEAN_NAME = "partyForm";
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party")
     public String getPartyPage(Model model) {
-        model.addAttribute(new PartyForm());
+        model.addAttribute(FORM_BEAN_NAME, new PartyForm());
         return ViewRoute.PARTY;
     }
     
@@ -38,7 +41,7 @@ public class PartyController {
     @RequestMapping(value = "core/party/{id}")
     public String getParty(Model model, @PathVariable long id) {
         PartyForm party = partyService.getPartyById(id);
-        model.addAttribute(party);
+        model.addAttribute(FORM_BEAN_NAME, party);
         return ViewRoute.PARTY;
     }
 
@@ -52,7 +55,26 @@ public class PartyController {
         if (!errors.hasErrors()) {
             partyService.saveParty(partyForm);
             PartyForm retrievedPartyForm = partyService.getPartyByName(partyForm.getPartyName());
-            mav.addObject(retrievedPartyForm);
+            mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+        }
+        
+        return mav;
+        
+    }
+
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/party", method = RequestMethod.POST, params="updateAction")
+    public ModelAndView updateParty(@Valid @ModelAttribute PartyForm partyForm, Errors errors) {
+        
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+        
+        if (!errors.hasErrors()) {
+            partyService.updateParty(partyForm);
+            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+            mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+            // TODO: move message to a status bar component
+            mav.addObject("notification", retrievedPartyForm.getPartyName() + " has been Saved.");
         }
         
         return mav;

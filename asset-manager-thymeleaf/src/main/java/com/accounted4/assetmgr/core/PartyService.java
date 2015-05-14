@@ -10,6 +10,8 @@ public interface PartyService {
     
     void saveParty(PartyForm partyForm);
     
+    void updateParty(PartyForm partyForm);
+
     PartyForm getPartyById(long id);
     
     PartyForm getPartyByName(String partyName);

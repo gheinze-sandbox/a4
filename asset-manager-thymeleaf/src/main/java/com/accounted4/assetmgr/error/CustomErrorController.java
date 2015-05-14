@@ -20,7 +20,7 @@ class CustomErrorController {
      * Display an error page, as defined in web.xml <code>custom-error</code> element.
      */
     @Layout(value = "core/layouts/default")
-    @RequestMapping("generalError")
+    @RequestMapping("/error/general")
     public String generalError(HttpServletRequest request, HttpServletResponse response, Model model) {
         
         // retrieve some useful information from the request

@@ -23,6 +23,11 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
+    public void updateParty(PartyForm partyForm) {
+        partyRepository.update(partyForm);
+    }
+
+    @Override
     public PartyForm getPartyById(long id) {
         return partyRepository.getPartyById(id);
     }

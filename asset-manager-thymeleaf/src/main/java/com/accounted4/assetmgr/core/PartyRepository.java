@@ -15,6 +15,9 @@ public interface PartyRepository {
      */
     void save(PartyForm partyForm);
     
+    
+    void update(PartyForm partyForm);
+    
     /**
      * Find a "party" based on the id. The party is retrieved whether it
      * is inactive or not.

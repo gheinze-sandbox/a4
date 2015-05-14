@@ -63,6 +63,31 @@ public class PartyRepositoryImpl implements PartyRepository {
     /*
      * ===================================================================
      */
+    private static final String UPDATE_PARTY =
+            "UPDATE party SET party_name = :partyName, notes = :notes, inactive = :inactive" +
+            "  WHERE org_id = :orgId AND id = :id AND version = :version"
+            ;
+    
+    @Override
+    public void update(PartyForm partyForm) {
+
+        ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyForm);
+        
+        // these bind parameters are not available from the form and need to be manually added
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        namedParameters.addValue("inactive", partyForm.getRecord().isInactive());
+        namedParameters.addValue("id", partyForm.getRecord().getId());
+        namedParameters.addValue("version", partyForm.getRecord().getVersion());
+        
+        jdbc.update(UPDATE_PARTY, namedParameters);
+        
+        // TODO: handle concurrent update: ie no rows updated because of version
+        
+    }
+    
+    /*
+     * ===================================================================
+     */
     private static final String GET_PARTY_BY_ID = 
             "SELECT * FROM party WHERE org_id = :orgId AND id = :id";
 
