@@ -12,6 +12,8 @@ public interface PartyService {
     
     void updateParty(PartyForm partyForm);
 
+    void deleteParty(PartyForm partyForm);
+
     PartyForm getPartyById(long id);
     
     PartyForm getPartyByName(String partyName);

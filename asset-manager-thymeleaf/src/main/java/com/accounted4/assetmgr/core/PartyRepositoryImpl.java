@@ -85,6 +85,23 @@ public class PartyRepositoryImpl implements PartyRepository {
         
     }
     
+
+    /*
+     * ===================================================================
+     */
+    private static final String DELETE_PARTY =
+            "UPDATE party SET inactive = true" +
+            "  WHERE org_id = :orgId AND id = :id"  // TODO: do we care about version on delete??
+            ;
+    
+    @Override
+    public void deleteParty(long id) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        jdbc.update(DELETE_PARTY, namedParameters);
+    }
+    
+    
     /*
      * ===================================================================
      */

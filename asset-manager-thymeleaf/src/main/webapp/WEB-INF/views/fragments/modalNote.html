@@ -36,7 +36,7 @@ within a form backed by a bean with a "notes" attribute to have the model popula
                         <h4 class="modal-title" id="noteModalLabel">Notes</h4>
                     </div>
                     <div class="modal-body">
-                            <textarea name="notes" id="notes" rows="10" cols="80">
+                            <textarea name="notes" id="notes" th:field="*{notes}" rows="10" cols="80">
                             </textarea>
                             <script>
                                 CKEDITOR.replace( 'notes' );

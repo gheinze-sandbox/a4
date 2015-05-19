@@ -1,6 +1,5 @@
 package com.accounted4.assetmgr.core;
 
-import com.accounted4.assetmgr.config.ViewRoute;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,11 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public void updateParty(PartyForm partyForm) {
         partyRepository.update(partyForm);
+    }
+
+    @Override
+    public void deleteParty(PartyForm partyForm) {
+        partyRepository.deleteParty(partyForm.getRecord().getId());
     }
 
     @Override

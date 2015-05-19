@@ -18,6 +18,8 @@ public interface PartyRepository {
     
     void update(PartyForm partyForm);
     
+    void deleteParty(long id);
+    
     /**
      * Find a "party" based on the id. The party is retrieved whether it
      * is inactive or not.
@@ -38,5 +40,5 @@ public interface PartyRepository {
     
     
     List<PartyForm> findParties(PartyForm partyFormTemplate);
-    
+
 }

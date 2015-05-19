@@ -25,6 +25,7 @@ The content for this page is a search result: a list of urls.
         <div class="container" th:fragment="content">
             <div th:if="${#lists.isEmpty(selectList)}">No records found matching criteria</div>
             <div th:if="${!#lists.isEmpty(selectList)}">
+                <h3>Find Results:</h3>
                 <table class="table table-striped">
                     <tr th:each="item : ${selectList}">
                         <td><a th:href="@{${item.url}}" th:text="${item.urlDisplay}">PartyName</a></td>

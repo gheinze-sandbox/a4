@@ -10,6 +10,22 @@
         <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
         <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+        
+        <script type="text/javascript">
+        <!--
+ 
+        $(document).ready(function () {
+ 
+        window.setTimeout(function() {
+            $(".alert").fadeTo(1500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 2000);
+ 
+        });
+        //-->
+        </script>
+
     </head>
     
     <body>
@@ -17,9 +33,7 @@
         <div th:replace="fragments/header :: header">Header</div>
         
         <div th:if="${notification}">
-            <div class="alert alert-success" role="alert">
                 <div class="alert alert-success" role="alert" th:text="${notification}">...</div>
-            </div>
         </div>
 
         <div th:replace="${view} :: content">Content</div>

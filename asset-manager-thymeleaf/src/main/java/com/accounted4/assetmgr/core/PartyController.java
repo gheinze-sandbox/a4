@@ -73,10 +73,36 @@ public class PartyController {
             partyService.updateParty(partyForm);
             PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
             mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
-            // TODO: move message to a status bar component
-            mav.addObject("notification", retrievedPartyForm.getPartyName() + " has been Saved.");
+            // TODO: move message to a status bar component? Change this to a notify function?
+            mav.addObject("notification", retrievedPartyForm.getPartyName() + " has been Updated.");
         }
         
+        return mav;
+        
+    }
+
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/party", method = RequestMethod.POST, params="deleteAction")
+    public ModelAndView deleteParty(@Valid @ModelAttribute PartyForm partyForm) {
+        
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+        partyService.deleteParty(partyForm);
+        mav.addObject(FORM_BEAN_NAME, new PartyForm());
+        mav.addObject("notification", partyForm.getPartyName() + " has been Inactivated.");
+
+        return mav;
+        
+    }
+
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/party", method = RequestMethod.POST, params="clearAction")
+    public ModelAndView clearParty(@Valid @ModelAttribute PartyForm partyForm) {
+        
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+        mav.addObject(FORM_BEAN_NAME, new PartyForm());
+
         return mav;
         
     }
@@ -100,19 +126,6 @@ public class PartyController {
         
         return mav;
         
-    }
-
-    
-    // TODO: handling other posts: find, update, delete, ... (this is just a template method)
-    
-    @RequestMapping(value = "core/party", method = RequestMethod.POST)
-    public String handlePartyPost(@Valid @ModelAttribute PartyForm partyForm,  @RequestParam String action, Errors errors) {
-        
-        if (errors.hasErrors()) {
-            return ViewRoute.PARTY;
-        }
-        
-        return ViewRoute.PARTY;
     }
         
     
