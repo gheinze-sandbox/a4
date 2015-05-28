@@ -1,5 +1,6 @@
-package com.accounted4.assetmgr.core;
+package com.accounted4.assetmgr.core.party;
 
+import com.accounted4.assetmgr.core.SelectItem;
 import java.util.List;
 
 /**

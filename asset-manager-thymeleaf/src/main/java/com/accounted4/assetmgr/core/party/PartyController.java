@@ -1,6 +1,7 @@
-package com.accounted4.assetmgr.core;
+package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.config.ViewRoute;
+import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.support.web.Layout;
 import java.security.Principal;
 import java.util.List;
@@ -28,11 +29,13 @@ public class PartyController {
     @Autowired PartyService partyService;
     
     private static final String FORM_BEAN_NAME = "partyForm";
+    private static final String ADDRESS_FORM_BEAN_NAME = "addressForm";
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party")
     public String getPartyPage(Model model) {
         model.addAttribute(FORM_BEAN_NAME, new PartyForm());
+        model.addAttribute(ADDRESS_FORM_BEAN_NAME, new AddressForm());
         return ViewRoute.PARTY;
     }
     
@@ -42,6 +45,7 @@ public class PartyController {
     public String getParty(Model model, @PathVariable long id) {
         PartyForm party = partyService.getPartyById(id);
         model.addAttribute(FORM_BEAN_NAME, party);
+        model.addAttribute(ADDRESS_FORM_BEAN_NAME, new AddressForm());
         return ViewRoute.PARTY;
     }
 
@@ -56,6 +60,7 @@ public class PartyController {
             partyService.saveParty(partyForm);
             PartyForm retrievedPartyForm = partyService.getPartyByName(partyForm.getPartyName());
             mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+            mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
         }
         
         return mav;
@@ -73,6 +78,7 @@ public class PartyController {
             partyService.updateParty(partyForm);
             PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
             mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+            mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
             // TODO: move message to a status bar component? Change this to a notify function?
             mav.addObject("notification", retrievedPartyForm.getPartyName() + " has been Updated.");
         }
@@ -89,6 +95,7 @@ public class PartyController {
         ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
         partyService.deleteParty(partyForm);
         mav.addObject(FORM_BEAN_NAME, new PartyForm());
+            mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
         mav.addObject("notification", partyForm.getPartyName() + " has been Inactivated.");
 
         return mav;
@@ -102,6 +109,7 @@ public class PartyController {
         
         ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
         mav.addObject(FORM_BEAN_NAME, new PartyForm());
+        mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
 
         return mav;
         
@@ -123,6 +131,7 @@ public class PartyController {
         
         ModelAndView mav = new ModelAndView(ViewRoute.SELECT_LIST);
         mav.addObject("selectList", partyService.generateUrlList(parties));
+        mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
         
         return mav;
         

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<!--/*
+<!--/*/
 
 The "modeButtons" fragment: the "modalButtons" div will be inserted into the active layout.
 
@@ -10,9 +10,12 @@ The content for this page conditionally displays one of two sets of buttons:
         or
     Update, Delete
 
-Assumes the backing bean has a "record" attribute (RecordMetaData).
+Assumes the "selected" object has a "record" attribute (of type RecordMetaData).
+A form typically has a backing bean as the th:object (e.g. th:object="${partyForm})
+and the backing bean has a "record" field which can be accessed with the following selector:
+  *{record.insertMode}
 
-*/-->
+/*/-->
 
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">

@@ -69,6 +69,14 @@ contact numbers, etc.
                     
                 </form>
 
+            
+            <div th:if="${partyForm.record.editMode}">
+                <div th:replace="core/party/address :: modalAddress"></div>
+                <h4>Address <span class="fa fa-plus-circle" style="color:green"></span></h4>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addressModal">Address</button>
+            </div>
+            
+
         </div>
         
     </body>

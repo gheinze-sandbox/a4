@@ -21,6 +21,9 @@
 # -- a4 global objects
 
 ./global/organization.sql
+./global/country.sql
+./global/country_subdivision.sql
+
 
 # -- a4 organization specific objects
 
@@ -29,12 +32,11 @@
 ./tenant/user_account/seed_user_accounts.sql
 
 ./tenant/party/party.sql
+./tenant/address.sql
 
-#./a4/party/party.sql
 #./a4/party/person.sql
 #./a4/party/organization.sql
 #./a4/party/organization_contact.sql
-#./a4/party/address.sql
 #./a4/party/person_address_map.sql
 #./a4/party/phone.sql
 #./a4/party/person_phone_map.sql

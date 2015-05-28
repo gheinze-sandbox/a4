@@ -1,5 +1,7 @@
-package com.accounted4.assetmgr.core;
+package com.accounted4.assetmgr.core.party;
 
+import com.accounted4.assetmgr.core.RecordMetaData;
+import com.accounted4.assetmgr.core.SessionUtil;
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;

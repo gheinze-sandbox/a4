@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    
+    <body>
+        
+        <div th:fragment="alert">
+            
+            <!-- A script to flash an alert in session at the top of the page and then let the message fade away  
+                To use this, include this fragment on the page:
+                    <div th:replace="fragments/flash :: alert">Flash alert script</div>
+                Then add an "alert" class to a component to temporarily flash, for example:
+                    <div class="alert alert-success" role="alert" th:text="${notification}">...</div>
+            -->
+
+            <script type="text/javascript">
+ 
+            $(document).ready(function () {
+ 
+            window.setTimeout(function() {
+                $(".alert").fadeTo(1500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                });
+            }, 2000);
+ 
+            });
+
+            </script>
+            
+        </div>
+        
+    </body>
+    
+</html>
+

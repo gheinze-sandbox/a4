@@ -47,3 +47,5 @@ psql -p 5432 -e a4 postgres < $CREATE_SCRIPT
 
 echo Create script generated to $CREATE_SCRIPT
 # pause
+
+grep -i "warn\|error" $CREATE_SCRIPT

@@ -1,4 +1,4 @@
-package com.accounted4.assetmgr.core;
+package com.accounted4.assetmgr.core.party;
 
 import java.util.List;
 
