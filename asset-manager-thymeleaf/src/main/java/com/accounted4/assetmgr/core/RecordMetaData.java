@@ -24,5 +24,10 @@ public class RecordMetaData {
     public boolean isInsertMode() {
         return !editMode;
     }
+
+    @Override
+    public String toString() {
+        return "RecordMetaData{" + "id=" + id + ", version=" + version + ", inactive=" + inactive + ", editMode=" + editMode + '}';
+    }
     
 }

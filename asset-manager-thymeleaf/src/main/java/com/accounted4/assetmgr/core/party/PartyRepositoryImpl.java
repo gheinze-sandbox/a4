@@ -1,16 +1,17 @@
 package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.core.RecordMetaData;
+import com.accounted4.assetmgr.core.ResultCheckingJdbcTemplate;
 import com.accounted4.assetmgr.core.SessionUtil;
+import com.accounted4.assetmgr.log.Loggable;
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import javax.sql.DataSource;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 
@@ -21,13 +22,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PartyRepositoryImpl implements PartyRepository {
     
-    private final NamedParameterJdbcTemplate jdbc;
+    @Loggable
+    private Logger LOG;
+
+    private final ResultCheckingJdbcTemplate jdbc;
     private final PartyRowMapper partyRowMapper;
 
     
     @Autowired
-    public PartyRepositoryImpl(DataSource dataSource) {
-        jdbc = new NamedParameterJdbcTemplate(dataSource);
+    public PartyRepositoryImpl(ResultCheckingJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
         partyRowMapper = new PartyRowMapper();
     }
 
@@ -82,8 +86,6 @@ public class PartyRepositoryImpl implements PartyRepository {
         namedParameters.addValue("version", partyForm.getRecord().getVersion());
         
         jdbc.update(UPDATE_PARTY, namedParameters);
-        
-        // TODO: handle concurrent update: ie no rows updated because of version
         
     }
     
@@ -151,6 +153,22 @@ public class PartyRepositoryImpl implements PartyRepository {
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
         namedParameters.addValue("inactive", partyFormTemplate.getRecord().isInactive());
         return jdbc.query(FIND_PARTIES, namedParameters, partyRowMapper);
+    }
+
+    
+    /*
+     * ===================================================================
+     */
+
+    private static final String ADD_ADDRESS_TO_PARTY =
+            "INSERT INTO party_address(org_id, party_id, address_id) VALUES(:orgId, :partyId, :addressId)";
+    
+    @Override
+    public void addAddressToParty(PartyForm partyForm, long addressId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyForm.getRecord().getId());
+        namedParameters.addValue("addressId", addressId);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        jdbc.update(ADD_ADDRESS_TO_PARTY, namedParameters);
     }
 
     

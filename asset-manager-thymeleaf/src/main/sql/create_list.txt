@@ -33,11 +33,11 @@
 
 ./tenant/party/party.sql
 ./tenant/address.sql
+./tenant/party/party_address.sql
 
 #./a4/party/person.sql
 #./a4/party/organization.sql
 #./a4/party/organization_contact.sql
-#./a4/party/person_address_map.sql
 #./a4/party/phone.sql
 #./a4/party/person_phone_map.sql
 #./a4/party/email.sql

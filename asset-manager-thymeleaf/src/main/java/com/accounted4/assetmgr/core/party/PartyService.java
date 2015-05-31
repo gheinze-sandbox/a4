@@ -1,6 +1,7 @@
 package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.core.SelectItem;
+import com.accounted4.assetmgr.core.address.AddressForm;
 import java.util.List;
 
 /**
@@ -22,5 +23,7 @@ public interface PartyService {
     List<PartyForm> findParties(PartyForm partyFormTemplate);
 
     List<SelectItem> generateUrlList(List<PartyForm> parties);
+
+    void addAddressToParty(PartyForm partyForm, AddressForm addressForm);
 
 }

@@ -5,6 +5,7 @@ CREATE TABLE address(
  ,subdivision_code CHAR(2) DEFAULT 'ON'
  ,country_code CHAR(2) DEFAULT 'CA'
  ,postal_code CHAR(7)
+,note TEXT
 , CONSTRAINT address_province_fk FOREIGN KEY(country_code,  subdivision_code) REFERENCES country_subdivision(country_code, subdivision_code)
 ) INHERITS(base);
 

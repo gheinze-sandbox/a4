@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.spring;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -42,5 +44,53 @@ public class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlParamet
                 beanPropertySqlParameterSource.getSqlType(paramName) :
                 mapSqlParameterSource.getSqlType(paramName);
     }
+
+    @Override
+    public String toString() {
+        return getMappedParameters()+ " " + getBeanParameters();
+    }
+    
+    
+    private String getMappedParameters() {
+        
+        StringBuilder msg = new StringBuilder();
+        
+        msg.append("Mapped parameters: {");
+        
+        for (Entry<String, Object> entry : mapSqlParameterSource.getValues().entrySet()) {
+            msg.append("[");
+            msg.append(entry.getKey());
+            msg.append(", ");
+            msg.append(entry.getValue());
+            msg.append("]");
+        }
+        
+        msg.append("}");
+        
+        return msg.toString();
+        
+    }
+    
+    private String getBeanParameters() {
+        
+        StringBuilder msg = new StringBuilder();
+        
+        msg.append("Bean Property Parameters: {");
+        
+        String[] readablePropertyNames = beanPropertySqlParameterSource.getReadablePropertyNames();
+        for (String property : readablePropertyNames) {
+            msg.append("[");
+            msg.append(property);
+            msg.append(", ");
+            msg.append(beanPropertySqlParameterSource.getValue(property));
+            msg.append("]");
+        }
+        
+        msg.append("}");
+        
+        return msg.toString();
+        
+    }
+    
     
 }

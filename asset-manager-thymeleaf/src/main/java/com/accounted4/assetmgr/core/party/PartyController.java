@@ -3,7 +3,6 @@ package com.accounted4.assetmgr.core.party;
 import com.accounted4.assetmgr.config.ViewRoute;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.support.web.Layout;
-import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
 
 /**
  *
@@ -41,6 +40,27 @@ public class PartyController {
     
     
     @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/partyAddress", method = RequestMethod.POST, params="saveAddressAction")
+    public ModelAndView savePartyAddress(
+            @ModelAttribute PartyForm partyForm
+            ,@Valid @ModelAttribute AddressForm addressForm
+            ,Errors errors) {
+        
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+        
+        if (!errors.hasErrors()) {
+            partyService.addAddressToParty(partyForm, addressForm);
+            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+            mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+            mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
+        }
+        
+        return mav;
+        
+    }
+
+    
+    @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party/{id}")
     public String getParty(Model model, @PathVariable long id) {
         PartyForm party = partyService.getPartyById(id);
@@ -52,7 +72,7 @@ public class PartyController {
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party", method = RequestMethod.POST, params="saveAction")
-    public ModelAndView saveParty(@Valid @ModelAttribute PartyForm partyForm, Errors errors, Principal principal) {
+    public ModelAndView saveParty(@Valid @ModelAttribute PartyForm partyForm, Errors errors) {
         
         ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
         
@@ -118,7 +138,7 @@ public class PartyController {
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party", method = RequestMethod.POST, params="findAction")
-    public ModelAndView findParty(@ModelAttribute PartyForm partyForm, BindingResult bindingResult, Principal principal) {
+    public ModelAndView findParty(@ModelAttribute PartyForm partyForm, BindingResult bindingResult) {
         
         List<PartyForm> parties = partyService.findParties(partyForm);
         
@@ -138,4 +158,6 @@ public class PartyController {
     }
         
     
+    
+
 }

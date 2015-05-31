@@ -1,6 +1,8 @@
 package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.core.SelectItem;
+import com.accounted4.assetmgr.core.address.AddressForm;
+import com.accounted4.assetmgr.core.address.AddressRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PartyServiceImpl implements PartyService {
 
-    @Autowired
-    PartyRepository partyRepository;
+    @Autowired PartyRepository partyRepository;
+    @Autowired AddressRepository addressRepository;
     
     
     @Override
@@ -56,6 +58,12 @@ public class PartyServiceImpl implements PartyService {
                 .forEach((item) -> { result.add(item); })
                 ;
         return result;
+    }
+
+    @Override
+    public void addAddressToParty(PartyForm partyForm, AddressForm addressForm) {
+        long addressId = addressRepository.save(addressForm);
+        partyRepository.addAddressToParty(partyForm, addressId);
     }
     
 }

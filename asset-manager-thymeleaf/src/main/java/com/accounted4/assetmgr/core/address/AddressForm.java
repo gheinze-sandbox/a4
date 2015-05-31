@@ -34,8 +34,11 @@ public class AddressForm {
     private String countryCode = DEFAULT_COUNTRY;
 
     @Getter @Setter
-    @Pattern(regexp = "[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d", message = "Postal code validation failed.")
+    //@Pattern(regexp = "[A-Za-z]\\d[A-Za-z]\\s?\\d[A-Za-z]\\d", message = "Postal code validation failed.")
     private String postalCode;
+
+    @Getter @Setter
+    private String note;
 
 
     @Getter @Setter

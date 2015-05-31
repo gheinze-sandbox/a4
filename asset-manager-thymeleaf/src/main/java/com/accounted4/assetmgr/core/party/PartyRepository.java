@@ -41,4 +41,6 @@ public interface PartyRepository {
     
     List<PartyForm> findParties(PartyForm partyFormTemplate);
 
+    void addAddressToParty(PartyForm partyForm, long addressId);
+
 }

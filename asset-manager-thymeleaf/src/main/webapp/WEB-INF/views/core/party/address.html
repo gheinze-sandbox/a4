@@ -16,7 +16,7 @@ The content for this page is relates to defining an addresses.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
         <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
-        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="../../../resources/js/jquery-2.1.4.min.js" th:src="@{/resources/js/jquery-2.1.4.min.js}"></script>
         <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
     </head>
 
@@ -38,8 +38,6 @@ The content for this page is relates to defining an addresses.
                     
                     <div class="modal-body">
                         
-                        <form class="form-horizontal" method="post" th:action="@{/core/address}" th:object="${addressForm}" >
-
                             <!--/* Show general error message when form contains errors */-->
                             <th:block th:if="${#fields.hasErrors('${partyForm.*}')}">
                                 <div th:replace="fragments/alert :: alert (type='danger', message='Form contains errors. Please try again.')">Alert</div>
@@ -84,25 +82,26 @@ The content for this page is relates to defining an addresses.
                                 <div class="form-group" th:classappend="${#fields.hasErrors('postalCode')}? 'has-error'">
                                     <label for="postalCode" class="col-lg-2 control-label">Postal Code</label>
                                     <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="postalCode" placeholder="Postal Code" th:field="*{postalCode}" />
+                                        <input type="text" class="form-control" id="postalCode" placeholder="A0B 2C3" th:field="*{postalCode}" />
                                         <span class="help-block" th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}">Invalid postal code</span>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <div class="col-lg-offset-2 col-lg-10">
-                                        <button type="submit" class="btn btn-success">Save Address</button>
+                                    <label for="note" class="col-lg-2 control-label">Note</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="note" placeholder="Note" th:field="*{note}" />
                                     </div>
                                 </div>
 
                             </fieldset>
 
-                        </form>
-
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" name="saveAddressAction" value="saveAddress">Save Address</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" name="closeAddressAction" value="closeAddress">Close</button>
                     </div>
                     
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+
                     </div>
                     
                 </div>
