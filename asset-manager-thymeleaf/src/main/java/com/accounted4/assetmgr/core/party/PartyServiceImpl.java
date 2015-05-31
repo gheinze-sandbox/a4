@@ -36,12 +36,18 @@ public class PartyServiceImpl implements PartyService {
 
     @Override
     public PartyForm getPartyById(long id) {
-        return partyRepository.getPartyById(id);
+        PartyForm result = partyRepository.getPartyById(id);
+        List<AddressForm> addressesForParty = addressRepository.getAddressesForParty(id);
+        result.setAddresses(addressesForParty);
+        return result;
     }
 
     @Override
     public PartyForm getPartyByName(String partyName) {
-        return partyRepository.getPartyByKey(partyName);
+        PartyForm result = partyRepository.getPartyByKey(partyName);
+        List<AddressForm> addressesForParty = addressRepository.getAddressesForParty(result.getRecord().getId());
+        result.setAddresses(addressesForParty);
+        return result;
     }
 
     @Override
@@ -64,6 +70,11 @@ public class PartyServiceImpl implements PartyService {
     public void addAddressToParty(PartyForm partyForm, AddressForm addressForm) {
         long addressId = addressRepository.save(addressForm);
         partyRepository.addAddressToParty(partyForm, addressId);
+    }
+
+    @Override
+    public void removeAddressFromParty(PartyForm partyForm, long selectedAddressId) {
+        partyRepository.removeAddressFromParty(partyForm, selectedAddressId);
     }
     
 }

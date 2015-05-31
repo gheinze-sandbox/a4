@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.core.address;
 
+import java.util.List;
+
 
 /**
  *
@@ -7,5 +9,7 @@ package com.accounted4.assetmgr.core.address;
 public interface AddressRepository {
  
     long save(AddressForm addressForm);
+    
+    List<AddressForm> getAddressesForParty(long partyId);
 
 }

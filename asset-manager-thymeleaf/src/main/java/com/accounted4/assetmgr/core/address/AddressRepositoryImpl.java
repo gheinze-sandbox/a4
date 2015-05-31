@@ -7,9 +7,11 @@ import com.accounted4.assetmgr.log.Loggable;
 import com.accounted4.assetmgr.spring.ExtensibleBeanPropertySqlParameterSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -42,8 +44,8 @@ public class AddressRepositoryImpl implements AddressRepository {
      * ===================================================================
      */
     private static final String INSERT_ADDRESS =
-            "INSERT INTO address(org_id, line1, line2, city, subdivision_code, country_code, postal_code, inactive)" +
-            "  VALUES(:orgId, :line1, :line2, :city, :subdivisionCode, :countryCode, :postalCode, :inactive)"
+            "INSERT INTO address(org_id, line1, line2, city, subdivision_code, country_code, postal_code, note, inactive)" +
+            "  VALUES(:orgId, :line1, :line2, :city, :subdivisionCode, :countryCode, :postalCode, :note, :inactive)"
             ;
 
     /**
@@ -69,10 +71,26 @@ public class AddressRepositoryImpl implements AddressRepository {
     
     }
 
+    
+    /*
+     * ===================================================================
+     */
+    private static final String GET_ADDRESS_FOR_PARTY =
+            "SELECT a.* FROM party_address pa" +
+            "  INNER JOIN address a ON (a.org_id = pa.org_id AND a.id = pa.address_id AND pa.party_id = :partyId AND pa.org_id = :orgId)"
+            ;
+
+    @Override
+    public List<AddressForm> getAddressesForParty(long partyId) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyId);
+        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
+        return jdbc.query(GET_ADDRESS_FOR_PARTY, namedParameters, addressRowMapper);
+    }
+
 
 
     private enum AddressColumn {
-        id, version, inactive, line1, line2, city, subdivision_code, country_code, postal_code;
+        id, version, inactive, line1, line2, city, subdivision_code, country_code, postal_code, note;
     }
     
     private static class AddressRowMapper implements RowMapper<AddressForm> {
@@ -93,6 +111,7 @@ public class AddressRepositoryImpl implements AddressRepository {
             addressForm.setSubdivisionCode(rs.getString(AddressColumn.subdivision_code.name()));
             addressForm.setCountryCode(rs.getString(AddressColumn.country_code.name()));
             addressForm.setPostalCode(rs.getString(AddressColumn.postal_code.name()));
+            addressForm.setNote(rs.getString(AddressColumn.note.name()));
             
             addressForm.setRecord(recordMetaData);
             

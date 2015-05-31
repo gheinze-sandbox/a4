@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -57,6 +58,24 @@ public class PartyController {
         
         return mav;
         
+    }
+
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/partyAddressDelete", method = RequestMethod.POST)
+    public ModelAndView removePartyAddressMapping(
+            @ModelAttribute PartyForm partyForm,
+            @RequestParam long selectedAddressId) {
+
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+
+        partyService.removeAddressFromParty(partyForm, selectedAddressId);
+        PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+        mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+        mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
+
+        return mav;
+
     }
 
     

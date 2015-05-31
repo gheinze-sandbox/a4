@@ -2,6 +2,7 @@ package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.core.RecordMetaData;
 import com.accounted4.assetmgr.core.address.AddressForm;
+import java.util.List;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +33,6 @@ public class PartyForm {
     private RecordMetaData record = new RecordMetaData();
     
     @Getter @Setter
-    private AddressForm addressForm;
+    private List<AddressForm> addresses;
     
 }

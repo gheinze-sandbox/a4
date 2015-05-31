@@ -76,9 +76,23 @@ contact numbers, etc.
                     <div th:replace="core/party/address :: modalAddress"></div>
                 </form>
                 
-                <h4>Address <span><button type="button" class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal"></button></span></h4>
-                
-                
+                <h4>Address <a href="#"><span class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal"></span></a></h4>
+
+                <form id="partyAddress" method="post" th:action="@{/core/partyAddressDelete}">
+                    <input type="hidden" name="selectedAddressId" id="selectedAddressId" value=""/>
+                    <table class="table table-striped">
+                        <tr th:each="address : ${partyForm.addresses}">
+                            <td th:text="${address.toString()}">Address</td>
+                            <td th:text="${address.note}">Note</td>
+                            <td><a href="#"
+                                   th:onclick="'document.getElementById(\'selectedAddressId\').value = \'' + ${address.record.id} + '\'; document.forms[\'partyAddress\'].submit(); return false;'">
+                                    <i class="fa fa-remove" style="color:red"/>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+
             </div>
             
 

@@ -38,9 +38,17 @@ public interface PartyRepository {
      */
     PartyForm getPartyByKey(String partyName);
     
-    
+    /**
+     * Retrieves a list of partially populated Party objects. Mapped entries
+     * such as lists of addresses, phone numbers, email, etc are not populated. They
+     * are populated when a Party is retrieved individually (i.e. getPartyById, getPartyByKey).
+     * @param partyFormTemplate
+     * @return 
+     */
     List<PartyForm> findParties(PartyForm partyFormTemplate);
 
     void addAddressToParty(PartyForm partyForm, long addressId);
+
+    public void removeAddressFromParty(PartyForm partyForm, long addressId);
 
 }

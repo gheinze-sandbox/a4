@@ -4,6 +4,7 @@ import com.accounted4.assetmgr.core.RecordMetaData;
 import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 /**
  * Backing bean for the Address form.
@@ -43,5 +44,20 @@ public class AddressForm {
 
     @Getter @Setter
     private RecordMetaData record = new RecordMetaData();
+
+    @Override
+    public String toString() {
+        
+        StringBuilder result = new StringBuilder();
+        
+        result.append(StringUtils.hasText(line1) ? ", " + line1 : "");
+        result.append(StringUtils.hasText(line2) ? ", " + line2 : "");
+        result.append(StringUtils.hasText(city) ? ", " + city : "");
+        result.append(StringUtils.hasText(subdivisionCode) ? ", " + subdivisionCode : "");
+        result.append(StringUtils.hasText(postalCode) ? ", " + postalCode : "");
+        
+        return result.length() > 0 ? result.substring(2) : "";
+
+    }
  
 }

@@ -165,12 +165,24 @@ public class PartyRepositoryImpl implements PartyRepository {
     
     @Override
     public void addAddressToParty(PartyForm partyForm, long addressId) {
+        executeDml(ADD_ADDRESS_TO_PARTY, partyForm, addressId);
+    }
+
+    
+    private static final String REMOVE_ADDRESS_FROM_PARTY =
+            "DELETE FROM party_address WHERE org_id = :orgId AND party_id = :partyId AND address_id = :addressId";
+    
+    @Override
+    public void removeAddressFromParty(PartyForm partyForm, long addressId) {
+        executeDml(REMOVE_ADDRESS_FROM_PARTY, partyForm, addressId);
+    }
+
+    private void executeDml(String sql, PartyForm partyForm, long addressId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyForm.getRecord().getId());
         namedParameters.addValue("addressId", addressId);
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        jdbc.update(ADD_ADDRESS_TO_PARTY, namedParameters);
+        jdbc.update(sql, namedParameters);
     }
-
     
     
     private enum PartyColumn {
