@@ -1,16 +1,21 @@
 package com.accounted4.assetmgr.spring;
 
-import java.util.Map;
+import com.accounted4.assetmgr.core.RecordMetaData;
+import com.accounted4.assetmgr.core.RecordMetaDataHolder;
+import com.accounted4.assetmgr.core.SessionUtil;
 import java.util.Map.Entry;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 /**
- *
+ * A SqlParameterSource which can be used to pull parameters from a bean
+ * (i.e. the BeanPropertySqlParameterSource) but also provides a facility for adding
+ * some extra custom mappings via a MapSqlParameterSource.
+ * 
  * @author gheinze
  */
-public class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlParameterSource {
+public final class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlParameterSource {
 
     
     private final MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
@@ -19,6 +24,13 @@ public class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlParamet
     
     public ExtensibleBeanPropertySqlParameterSource(Object object) {
         this.beanPropertySqlParameterSource = new BeanPropertySqlParameterSource(object);
+        if (object instanceof RecordMetaDataHolder) {
+            RecordMetaData metaData = ((RecordMetaDataHolder) object).getRecordMetaData();
+            addValue("orgId", SessionUtil.getSessionOrigId());
+            addValue("inactive", metaData.isInactive());
+            addValue("id", metaData.getId());
+            addValue("version", metaData.getVersion());
+        }
     }
 
     public void addValue(String paramName, Object value) {
@@ -45,6 +57,13 @@ public class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlParamet
                 mapSqlParameterSource.getSqlType(paramName);
     }
 
+    
+    // --------------------------------------------
+    
+    
+    
+    // --------------------------------------------
+    
     @Override
     public String toString() {
         return getMappedParameters()+ " " + getBeanParameters();

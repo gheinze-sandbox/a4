@@ -56,7 +56,7 @@ contact numbers, etc.
                         <div class="form-group">
                             <div class="col-lg-1"></div>
                             <div class="col-lg-11">
-                                <input type="checkbox" name="inactive" th:field="*{record.inactive}"/>Inactive
+                                <input type="checkbox" name="inactive" th:field="*{recordMetaData.inactive}"/>Inactive
                             </div>
                         </div>
 
@@ -70,28 +70,69 @@ contact numbers, etc.
                 </form>
 
             
-            <div th:if="${partyForm.record.editMode}">
+            <div th:if="${partyForm.recordMetaData.editMode}">
                 
-                <form class="form-horizontal" method="post" th:action="@{/core/partyAddress}" th:object="${addressForm}" >
-                    <div th:replace="core/party/address :: modalAddress"></div>
+                <!-- A form to show an "Address" modal dialog -->
+                <form id="addressModalForm" class="form-horizontal" method="post" th:action="@{/core/partyAddress}" th:object="${addressForm}" >
+                    <div th:replace="core/contact/address :: modalAddress"></div>
                 </form>
+                
+                <!-- A form to request a deletion of an "Address" mapping to a "Party" -->
+                <form id="partyAddress" method="post" th:action="@{/core/partyAddressDelete}">
+                    <input type="hidden" name="selectedAddressId" id="selectedAddressId" value=""/>
+                </form>
+                
+                
+                <!-- Pre-populate address modal -->
+                <script th:inline="javascript">
+                    function prepareAddressModal(srcAddress) {
+                        document.getElementById('line1').value = (srcAddress.line1|| "");
+                        document.getElementById('line2').value = (srcAddress.line2|| "");
+                        document.getElementById('city').value = (srcAddress.city|| "");
+                        document.getElementById('province').value = (srcAddress.subdivisionCode|| "");
+                        document.getElementById('postalCode').value = (srcAddress.postalCode|| "");
+                        document.getElementById('countryCode').value = (srcAddress.countryCode|| "");
+                        document.getElementById('note').value = (srcAddress.note|| "");
+                        document.getElementById('modalAddressId').value = (srcAddress.recordMetaData.id|| "");
+                        document.getElementById('modalAddressVersion').value = (srcAddress.recordMetaData.version|| "");
+                    }
+                </script>
+
                 
                 <h4>Address <a href="#"><span class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal"></span></a></h4>
 
-                <form id="partyAddress" method="post" th:action="@{/core/partyAddressDelete}">
-                    <input type="hidden" name="selectedAddressId" id="selectedAddressId" value=""/>
                     <table class="table table-striped">
-                        <tr th:each="address : ${partyForm.addresses}">
+                        
+                        <tr th:each="address, iterationStatus : ${partyForm.addresses}">
+                            
+                            <td th:text='${iterationStatus.count}'>index</td>
                             <td th:text="${address.toString()}">Address</td>
+<!--/*                             <td><a href="#" data-toggle="modal" data-target="#addressModal" th:text="${address.toString()}">Address</a></td> */-->
+
                             <td th:text="${address.note}">Note</td>
-                            <td><a href="#"
-                                   th:onclick="'document.getElementById(\'selectedAddressId\').value = \'' + ${address.record.id} + '\'; document.forms[\'partyAddress\'].submit(); return false;'">
+                            
+                            <!-- Edit Address -->
+                            <td>
+                                <a href="#"
+                                   data-toggle="modal" data-target="#addressModal"
+                                   th:onclick="'prepareAddressModal(' + ${address.toJson()} + '); return false;'">
+                                    <i class="fa fa-edit"/>
+                                </a>
+                            </td>
+                            
+
+                            
+                            <!-- Delete mapping -->
+                            <td>
+                                <a href="#"
+                                   th:onclick="'document.getElementById(\'selectedAddressId\').value = \'' + ${address.recordMetaData.id} + '\'; document.forms[\'partyAddress\'].submit(); return false;'">
                                     <i class="fa fa-remove" style="color:red"/>
                                 </a>
                             </td>
+
                         </tr>
+                        
                     </table>
-                </form>
 
             </div>
             

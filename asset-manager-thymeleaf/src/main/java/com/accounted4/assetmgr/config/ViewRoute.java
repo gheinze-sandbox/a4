@@ -22,6 +22,6 @@ public interface ViewRoute {
     
     static final String SELECT_LIST        = "/fragments/selectList";
     
-    static final String PARTY              = "/core/party/party";
+    static final String PARTY              = "/core/contact/party";
     
 }

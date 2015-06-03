@@ -10,10 +10,10 @@ The content for this page conditionally displays one of two sets of buttons:
         or
     Update, Delete
 
-Assumes the "selected" object has a "record" attribute (of type RecordMetaData).
+Assumes the "selected" object has a "recordMetaData" attribute (of type RecordMetaData).
 A form typically has a backing bean as the th:object (e.g. th:object="${partyForm})
-and the backing bean has a "record" field which can be accessed with the following selector:
-  *{record.insertMode}
+and the backing bean has a "recordMetaData" field which can be accessed with the following selector:
+  *{recordMetaData.insertMode}
 
 /*/-->
 
@@ -33,7 +33,7 @@ and the backing bean has a "record" field which can be accessed with the followi
             
             <!-- Could create an enum of modes and states and build this dynamically -->
             
-                        <div th:if="*{record.insertMode}">
+                        <div th:if="*{recordMetaData.insertMode}">
                             <div class="form-group">
                                 <div class="col-lg-offset-1 col-lg-11">
                                     <button type="submit" class="btn btn-warning" name="findAction" value="find">Find</button>
@@ -42,7 +42,7 @@ and the backing bean has a "record" field which can be accessed with the followi
                             </div>
                         </div>
 
-                        <div th:if="*{record.editMode}">
+                        <div th:if="*{recordMetaData.editMode}">
                             <div class="form-group">
                                 <div class="col-lg-offset-1 col-lg-11">
                                     <button type="submit" class="btn btn-success" name="updateAction" value="update">Update</button>

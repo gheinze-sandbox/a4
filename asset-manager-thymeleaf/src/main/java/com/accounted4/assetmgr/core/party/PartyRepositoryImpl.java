@@ -57,7 +57,7 @@ public class PartyRepositoryImpl implements PartyRepository {
         
         // these bind parameters are not available from the form and need to be manually added
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", partyForm.getRecord().isInactive());
+        namedParameters.addValue("inactive", partyForm.getRecordMetaData().isInactive());
         
         jdbc.update(INSERT_PARTY, namedParameters);
         
@@ -76,17 +76,8 @@ public class PartyRepositoryImpl implements PartyRepository {
     
     @Override
     public void update(PartyForm partyForm) {
-
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyForm);
-        
-        // these bind parameters are not available from the form and need to be manually added
-        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", partyForm.getRecord().isInactive());
-        namedParameters.addValue("id", partyForm.getRecord().getId());
-        namedParameters.addValue("version", partyForm.getRecord().getVersion());
-        
         jdbc.update(UPDATE_PARTY, namedParameters);
-        
     }
     
 
@@ -151,7 +142,7 @@ public class PartyRepositoryImpl implements PartyRepository {
     public List<PartyForm> findParties(PartyForm partyFormTemplate) {
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyFormTemplate);
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", partyFormTemplate.getRecord().isInactive());
+        namedParameters.addValue("inactive", partyFormTemplate.getRecordMetaData().isInactive());
         return jdbc.query(FIND_PARTIES, namedParameters, partyRowMapper);
     }
 
@@ -178,7 +169,7 @@ public class PartyRepositoryImpl implements PartyRepository {
     }
 
     private void executeDml(String sql, PartyForm partyForm, long addressId) {
-        MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyForm.getRecord().getId());
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyForm.getRecordMetaData().getId());
         namedParameters.addValue("addressId", addressId);
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
         jdbc.update(sql, namedParameters);
@@ -204,7 +195,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             partyForm.setPartyName(rs.getString(PartyColumn.party_name.name()));
             partyForm.setNotes(rs.getString(PartyColumn.notes.name()));
             
-            partyForm.setRecord(recordMetaData);
+            partyForm.setRecordMetaData(recordMetaData);
             
             return partyForm;
             

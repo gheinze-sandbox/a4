@@ -66,7 +66,7 @@ The content for this page is relates to defining an addresses.
                                 <div class="form-group" th:classappend="${#fields.hasErrors('city')}? 'has-error'">
                                     <label for="city" class="col-lg-2 control-label">City</label>
                                     <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="line1" placeholder="City" th:field="*{city}" />
+                                        <input type="text" class="form-control" id="city" placeholder="City" th:field="*{city}" />
                                         <span class="help-block" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">Invalid city</span>
                                     </div>
                                 </div>
@@ -95,6 +95,10 @@ The content for this page is relates to defining an addresses.
                                 </div>
 
                             </fieldset>
+                            
+                            <input type="hidden" name="countryCode" id="countryCode" value=""/>
+                            <input type="hidden" name="modalAddressId" id="modalAddressId" value=""/>
+                            <input type="hidden" name="modalAddressVersion" id="modalAddressVersion" value=""/>
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" name="saveAddressAction" value="saveAddress">Save Address</button>

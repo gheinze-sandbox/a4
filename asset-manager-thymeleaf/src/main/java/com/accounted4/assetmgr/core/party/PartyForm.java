@@ -1,6 +1,7 @@
 package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.core.RecordMetaData;
+import com.accounted4.assetmgr.core.RecordMetaDataHolder;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import java.util.List;
 import javax.validation.constraints.Size;
@@ -16,7 +17,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Or is this overkill at this stage?  For now treating as one bean until there is a need to separate.
  * 
  */
-public class PartyForm {
+public class PartyForm implements RecordMetaDataHolder {
     
     private static final String NOT_BLANK_MESSAGE = "{notBlank.message}";
 
@@ -30,7 +31,7 @@ public class PartyForm {
     private String notes;    
     
     @Getter @Setter
-    private RecordMetaData record = new RecordMetaData();
+    private RecordMetaData recordMetaData = new RecordMetaData();
     
     @Getter @Setter
     private List<AddressForm> addresses;

@@ -12,4 +12,6 @@ public interface AddressRepository {
     
     List<AddressForm> getAddressesForParty(long partyId);
 
+    void update(AddressForm addressForm);
+
 }

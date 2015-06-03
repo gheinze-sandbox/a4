@@ -31,7 +31,7 @@ public class PartyServiceImpl implements PartyService {
 
     @Override
     public void deleteParty(PartyForm partyForm) {
-        partyRepository.deleteParty(partyForm.getRecord().getId());
+        partyRepository.deleteParty(partyForm.getRecordMetaData().getId());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public PartyForm getPartyByName(String partyName) {
         PartyForm result = partyRepository.getPartyByKey(partyName);
-        List<AddressForm> addressesForParty = addressRepository.getAddressesForParty(result.getRecord().getId());
+        List<AddressForm> addressesForParty = addressRepository.getAddressesForParty(result.getRecordMetaData().getId());
         result.setAddresses(addressesForParty);
         return result;
     }
@@ -60,7 +60,7 @@ public class PartyServiceImpl implements PartyService {
         List<SelectItem> result = new ArrayList<>();
         parties
                 .stream()
-                .map( (partyForm)-> new SelectItem("/core/party/" + partyForm.getRecord().getId(), partyForm.getPartyName()) )
+                .map( (partyForm)-> new SelectItem("/core/party/" + partyForm.getRecordMetaData().getId(), partyForm.getPartyName()) )
                 .forEach((item) -> { result.add(item); })
                 ;
         return result;

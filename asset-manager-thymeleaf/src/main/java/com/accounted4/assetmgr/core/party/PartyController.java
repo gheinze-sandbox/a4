@@ -2,6 +2,7 @@ package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.config.ViewRoute;
 import com.accounted4.assetmgr.core.address.AddressForm;
+import com.accounted4.assetmgr.core.address.AddressService;
 import com.accounted4.assetmgr.support.web.Layout;
 import java.util.List;
 import javax.validation.Valid;
@@ -27,9 +28,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class PartyController {
     
     @Autowired PartyService partyService;
+    @Autowired AddressService addressService;
+    
     
     private static final String FORM_BEAN_NAME = "partyForm";
     private static final String ADDRESS_FORM_BEAN_NAME = "addressForm";
+    
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party")
@@ -45,15 +49,28 @@ public class PartyController {
     public ModelAndView savePartyAddress(
             @ModelAttribute PartyForm partyForm
             ,@Valid @ModelAttribute AddressForm addressForm
+            ,@RequestParam long modalAddressId
+            ,@RequestParam int modalAddressVersion
             ,Errors errors) {
         
         ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
         
-        if (!errors.hasErrors()) {
-            partyService.addAddressToParty(partyForm, addressForm);
-            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+        if (modalAddressId > 0L) {
+            // Update mode
+            addressForm.getRecordMetaData().setId(modalAddressId);
+            addressForm.getRecordMetaData().setVersion(modalAddressVersion);
+            addressService.updateAddress(addressForm);
+            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
             mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
             mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
+        } else {
+            // Insert mode
+            if (!errors.hasErrors()) {
+                partyService.addAddressToParty(partyForm, addressForm);
+                PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
+                mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+                mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
+            }
         }
         
         return mav;
@@ -70,7 +87,7 @@ public class PartyController {
         ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
 
         partyService.removeAddressFromParty(partyForm, selectedAddressId);
-        PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+        PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
         mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
         mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
 
@@ -115,7 +132,7 @@ public class PartyController {
         
         if (!errors.hasErrors()) {
             partyService.updateParty(partyForm);
-            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecord().getId());
+            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
             mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
             mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
             // TODO: move message to a status bar component? Change this to a notify function?
