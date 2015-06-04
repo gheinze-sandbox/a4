@@ -50,7 +50,7 @@ The content for this page is relates to defining an addresses.
                                 <div class="form-group" th:classappend="${#fields.hasErrors('line1')}? 'has-error'">
                                     <label for="line1" class="col-lg-2 control-label">Line 1</label>
                                     <div class="col-lg-8">
-                                        <input type="text" class="form-control" id="line1" placeholder="Line 1" th:field="*{line1}" />
+                                        <input type="text" class="form-control" id="line1" placeholder="Line 1" th:field="*{line1}"  autofocus="true"/>
                                         <span class="help-block" th:if="${#fields.hasErrors('line1')}" th:errors="*{line1}">Invalid address line 1</span>
                                     </div>
                                 </div>
@@ -96,9 +96,9 @@ The content for this page is relates to defining an addresses.
 
                             </fieldset>
                             
-                            <input type="hidden" name="countryCode" id="countryCode" value=""/>
-                            <input type="hidden" name="modalAddressId" id="modalAddressId" value=""/>
-                            <input type="hidden" name="modalAddressVersion" id="modalAddressVersion" value=""/>
+                            <input type="hidden" name="countryCode" id="countryCode" value="CA"/>
+                            <input type="hidden" name="modalAddressId" id="modalAddressId" value="0"/>
+                            <input type="hidden" name="modalAddressVersion" id="modalAddressVersion" value="0"/>
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" name="saveAddressAction" value="saveAddress">Save Address</button>

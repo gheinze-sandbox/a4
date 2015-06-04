@@ -78,7 +78,7 @@ contact numbers, etc.
                 </form>
                 
                 <!-- A form to request a deletion of an "Address" mapping to a "Party" -->
-                <form id="partyAddress" method="post" th:action="@{/core/partyAddressDelete}">
+                <form id="partyAddressDelete" method="post" th:action="@{/core/partyAddressDelete}">
                     <input type="hidden" name="selectedAddressId" id="selectedAddressId" value=""/>
                 </form>
                 
@@ -96,10 +96,16 @@ contact numbers, etc.
                         document.getElementById('modalAddressId').value = (srcAddress.recordMetaData.id|| "");
                         document.getElementById('modalAddressVersion').value = (srcAddress.recordMetaData.version|| "");
                     }
-                </script>
+                    
+                    // Every time a modal is shown, if it has an autofocus element, focus on it.
+                    $('.modal').on('shown.bs.modal', function() { $(this).find('[autofocus]').focus();
+                    // $('#addressModal').on('shown.bs.modal', function() { $('#line1').focus(); });
+});
+                    
+            </script>
 
                 
-                <h4>Address <a href="#"><span class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal"></span></a></h4>
+                <h4>Address <a href="#"><span class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal" th:onclick="'document.forms[\'addressModalForm\'].reset(); document.getElementById(\'line1\').focus(); return false;'"></span></a></h4>
 
                     <table class="table table-striped">
                         
@@ -125,7 +131,7 @@ contact numbers, etc.
                             <!-- Delete mapping -->
                             <td>
                                 <a href="#"
-                                   th:onclick="'document.getElementById(\'selectedAddressId\').value = \'' + ${address.recordMetaData.id} + '\'; document.forms[\'partyAddress\'].submit(); return false;'">
+                                   th:onclick="'document.getElementById(\'selectedAddressId\').value = \'' + ${address.recordMetaData.id} + '\'; document.forms[\'partyAddressDelete\'].submit(); return false;'">
                                     <i class="fa fa-remove" style="color:red"/>
                                 </a>
                             </td>
