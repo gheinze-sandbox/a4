@@ -14,4 +14,6 @@ public interface AddressRepository {
 
     void update(AddressForm addressForm);
 
+    List<AddressForm> getAddressList(String filter);
+
 }

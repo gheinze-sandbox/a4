@@ -98,6 +98,28 @@ public class AddressRepositoryImpl implements AddressRepository {
         jdbc.update(UPDATE_ADDRESS, namedParameters);
     }
 
+    
+    /*
+     * ===================================================================
+     */
+    // TODO: get addresses that are not yet mapped to a party, or other entity...
+    // TODO: extract filter expression generator into function, sanitize for &, |, !, unit test
+    private static final String GET_ADDRESSES =
+            "SELECT * " +
+            "  FROM address " +
+            "  WHERE org_id = :orgId " +
+            "      AND inactive = false " +
+            "      AND to_tsvector(line1 || ' ' || line2 || ' ' || city || ' ' || postal_code) @@ to_tsquery(:searchExpression) " +
+            "  ORDER BY city, line1, line2"
+            ;
+
+    @Override
+    public List<AddressForm> getAddressList(String filter) {
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource("orgId", SessionUtil.getSessionOrigId());
+        namedParameters.addValue("searchExpression", filter.replaceAll("\\s+", "&").trim());
+        return jdbc.query(GET_ADDRESSES, namedParameters, addressRowMapper);
+    }
+
 
 
     private enum AddressColumn {

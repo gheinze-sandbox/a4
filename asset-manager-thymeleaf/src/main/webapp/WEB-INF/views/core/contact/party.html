@@ -15,10 +15,14 @@ contact numbers, etc.
     <head>
         <title th:text="#{view.party.title}">Party</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        
         <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/selectize-0.12.1.css" rel="stylesheet" media="screen" th:href="@{/resources/css/selectize-0.12.1.css}" />
         <link href="../../../resources/css/core.css" rel="stylesheet" media="screen" th:href="@{/resources/css/core.css}" />
+        
         <script src="../../../resources/js/jquery-2.1.4.min.js" th:src="@{/resources/js/jquery-2.1.4.min.js}"></script>
         <script src="../../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+        <script src="../../../resources/js/selectize-0.12.1.min.js" th:src="@{/resources/js/selectize-0.12.1.min.js}"></script>
     </head>
 
     <body>
@@ -83,31 +87,15 @@ contact numbers, etc.
                 </form>
                 
                 
-                <!-- Pre-populate address modal -->
-                <script th:inline="javascript">
-                    function prepareAddressModal(srcAddress) {
-                        document.getElementById('line1').value = (srcAddress.line1|| "");
-                        document.getElementById('line2').value = (srcAddress.line2|| "");
-                        document.getElementById('city').value = (srcAddress.city|| "");
-                        document.getElementById('province').value = (srcAddress.subdivisionCode|| "");
-                        document.getElementById('postalCode').value = (srcAddress.postalCode|| "");
-                        document.getElementById('countryCode').value = (srcAddress.countryCode|| "");
-                        document.getElementById('note').value = (srcAddress.note|| "");
-                        document.getElementById('modalAddressId').value = (srcAddress.recordMetaData.id|| "");
-                        document.getElementById('modalAddressVersion').value = (srcAddress.recordMetaData.version|| "");
-                    }
-                    
-                    // Every time a modal is shown, if it has an autofocus element, focus on it.
-                    $('.modal').on('shown.bs.modal', function() { $(this).find('[autofocus]').focus();
-                    // $('#addressModal').on('shown.bs.modal', function() { $('#line1').focus(); });
-});
-                    
-            </script>
-
-                
                 <h4>Address <a href="#"><span class="fa fa-plus-circle" style="color:green" data-toggle="modal" data-target="#addressModal" th:onclick="'document.forms[\'addressModalForm\'].reset(); document.getElementById(\'line1\').focus(); return false;'"></span></a></h4>
-
-                    <table class="table table-striped">
+                
+                <form method="get" th:action="@{/core/addressSearch}" id="addressSearch">
+                    <div class="selectize-control multi">
+                        <select id="selectAddress" name="selectAddress" placeholder="Pick an address"></select>                        
+                    </div>
+                </form>
+                
+                <table class="table table-striped">
                         
                         <tr th:each="address, iterationStatus : ${partyForm.addresses}">
                             
@@ -142,9 +130,94 @@ contact numbers, etc.
 
             </div>
             
+            <!-- Note: the script should fall within the fragment to be included in the "default" template -->
+            <script th:inline="javascript">
+                
+                /* Pre-populate address modal */
+                function prepareAddressModal(srcAddress) {
+                    document.getElementById('line1').value = (srcAddress.line1|| "");
+                    document.getElementById('line2').value = (srcAddress.line2|| "");
+                    document.getElementById('city').value = (srcAddress.city|| "");
+                    document.getElementById('province').value = (srcAddress.subdivisionCode|| "");
+                    document.getElementById('postalCode').value = (srcAddress.postalCode|| "");
+                    document.getElementById('countryCode').value = (srcAddress.countryCode|| "");
+                    document.getElementById('note').value = (srcAddress.note|| "");
+                    document.getElementById('modalAddressId').value = (srcAddress.recordMetaData.id|| "");
+                    document.getElementById('modalAddressVersion').value = (srcAddress.recordMetaData.version|| "");
+                }
+                    
+                /**
+                 * returns the current context path,
+                 * ex: http://localhost:8080/MyApp/Controller returns /MyApp/
+                 * ex: http://localhost:8080/MyApp returns /MyApp/
+                 * ex: https://www.example.co.za/ returns /
+                 * http://stackoverflow.com/questions/14708003/javascript-relative-ajax-call-path
+                 */
+                function getContextPath() {
+                    var ctx = window.location.pathname,
+                        path = '/' !== ctx ? ctx.substring(0, ctx.indexOf('/', 1) + 1) : ctx;
+                    return path + (/\/$/.test(path) ? '' : '/');
+                }
+
+                // After document is ready, initialize some components
+                $( document ).ready( function() {
+
+                    // Every time a modal is shown, if it has an autofocus element, focus on it.
+                    $('.modal').on('shown.bs.modal', function() { $(this).find('[autofocus]').focus(); });
+                    // $('#addressModal').on('shown.bs.modal', function() { $('#line1').focus(); });
+
+
+                    // Attach behaviour for the address search "selectize" component
+                    $('#selectAddress').selectize({
+                        
+                        // The attributes from the retrieved objects mapped onto "select" component
+                        valueField: 'key',
+                        labelField: 'displayValue',
+                        searchField: 'displayValue',
+                        
+                        // Selection must be from the list, or non at all
+                        create: false,
+                        
+                        render: {
+                                // display of the selected item
+                                item: function(item, escape) {
+                                    return '<div class="glenntag"><span>' + escape(item.displayValue) + '</span></div>';
+                                },
+                                // display of the items in the drop down list
+                                option: function(item, escape) {
+                                    return '<div><span>' + escape(item.displayValue) + '</span></div>';
+                                }
+                        },
+                        
+                        load: function(query, callback) {
+                            
+                            if (!query.length) return callback();
+
+                            $.ajax({
+                                url: getContextPath() + 'core/addressSearch/' + encodeURIComponent(query),
+                                type: 'GET',
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    callback();
+                                },
+                                success: function(addressList) {
+                                    // The result to pass to callback must be an array of js objects
+                                    // The fields of the resultant objects to use for display, value, and search listed above
+                                    callback(addressList.slice(0, 20));  // Don't show more than 20 items
+                                }
+                            }); //end ajax call
+                            
+                        } //end load
+                        
+                    });  // end address selectize init            
+                        
+                        
+                });  // end document ready
+                
+            </script>
+
 
         </div>
-        
+                                
     </body>
     
 </html>

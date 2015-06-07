@@ -85,7 +85,7 @@ public class AddressForm implements RecordMetaDataHolder {
         
         String json = "";
         try {
-            json = String.valueOf(objectMapper.writeValueAsString(this));
+            json = objectMapper.writeValueAsString(this);
         } catch (IOException ex) {
             LOG.error("Failed convert to json: " + this.toString(), ex);
         }

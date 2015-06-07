@@ -1,5 +1,7 @@
 package com.accounted4.assetmgr.core.address;
 
+import java.util.List;
+
 /**
  *
  * @author gheinze
@@ -7,5 +9,7 @@ package com.accounted4.assetmgr.core.address;
 public interface AddressService {
 
     void updateAddress(AddressForm addressForm);
+  
+    String getAddressList(String filter);
     
 }

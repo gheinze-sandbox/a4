@@ -18,6 +18,11 @@ body {
             box-shadow: 0 1px 2px rgba(0,0,0,.05);
 }
 
+// An override of the background colour of selectize.css to highlight selected item
+// TODO: overide background. of .selectize-control.multi .selectize-input > div {
+.glenntag {
+  background: #0066cc; //#B2E567; //#efefef;
+}
 /* TODO: modify to support scrolling
     See http://stackoverflow.com/questions/12239166/footer-at-bottom-of-page-or-content-whichever-is-lower
 */
