@@ -28,4 +28,6 @@ public interface PartyService {
 
     void removeAddressFromParty(PartyForm partyForm, long selectedAddressId);
 
+    void attachAddressToParty(PartyForm partyForm, long addressId);
+
 }

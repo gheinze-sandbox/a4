@@ -159,6 +159,48 @@ contact numbers, etc.
                     return path + (/\/$/.test(path) ? '' : '/');
                 }
 
+
+                // Selectize helper functions
+                
+                function onAddressSearchLoad(query, callback) {
+                            
+                    if (!query.length) return callback();
+
+                    $.ajax({
+                        
+                        url: getContextPath() + 'core/addressSearch/' + encodeURIComponent(query),
+                        type: 'GET',
+                        
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            callback();
+                        },
+                        
+                        success: function(addressList) {
+                            // The result to pass to callback must be an array of js objects
+                            // The fields of the resultant objects to use for display, value, and search listed above
+                            callback(addressList.slice(0, 20));  // Don't show more than 20 items
+                        }
+                        
+                    }); //end ajax call
+
+                } // end onAddressSearchLoad
+                
+                
+                function onAddressSearchSelection(value, $item) {
+                    
+                    console.log($item);
+                    $.ajax({
+                        url: getContextPath() + 'core/party/addressAttach',
+                        type: 'POST',
+                        data: { addressId: value }
+                    });
+                    //var csrf_token = $.cookie('csrftoken');
+                    //$.post(getContextPath() + 'core/party/addressAttach', { addressId: value, _token: csrf_token });
+                    // TODO: create an ajax post with party id and address id, re-render page
+                }
+                
+                
+                
                 // After document is ready, initialize some components
                 $( document ).ready( function() {
 
@@ -189,24 +231,9 @@ contact numbers, etc.
                                 }
                         },
                         
-                        load: function(query, callback) {
-                            
-                            if (!query.length) return callback();
-
-                            $.ajax({
-                                url: getContextPath() + 'core/addressSearch/' + encodeURIComponent(query),
-                                type: 'GET',
-                                error: function(jqXHR, textStatus, errorThrown) {
-                                    callback();
-                                },
-                                success: function(addressList) {
-                                    // The result to pass to callback must be an array of js objects
-                                    // The fields of the resultant objects to use for display, value, and search listed above
-                                    callback(addressList.slice(0, 20));  // Don't show more than 20 items
-                                }
-                            }); //end ajax call
-                            
-                        } //end load
+                        load: onAddressSearchLoad,
+                        
+                        onItemAdd: onAddressSearchSelection
                         
                     });  // end address selectize init            
                         

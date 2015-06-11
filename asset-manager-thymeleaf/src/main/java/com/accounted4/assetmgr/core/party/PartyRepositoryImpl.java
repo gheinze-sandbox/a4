@@ -151,6 +151,7 @@ public class PartyRepositoryImpl implements PartyRepository {
      * ===================================================================
      */
 
+    
     private static final String ADD_ADDRESS_TO_PARTY =
             "INSERT INTO party_address(org_id, party_id, address_id) VALUES(:orgId, :partyId, :addressId)";
     
@@ -158,6 +159,7 @@ public class PartyRepositoryImpl implements PartyRepository {
     public void addAddressToParty(PartyForm partyForm, long addressId) {
         executeDml(ADD_ADDRESS_TO_PARTY, partyForm, addressId);
     }
+
 
     
     private static final String REMOVE_ADDRESS_FROM_PARTY =
@@ -168,14 +170,26 @@ public class PartyRepositoryImpl implements PartyRepository {
         executeDml(REMOVE_ADDRESS_FROM_PARTY, partyForm, addressId);
     }
 
+    
+    
+    private static final String ATTACH_ADDRESS_TO_PARTY =
+            "INSERT INTO party_address(org_id, party_id, address_id) VALUES(:orgId, :partyId, :addressId)";
+    
+    @Override
+    public void attachAddressToParty(PartyForm partyForm, long addressId) {
+        executeDml(ATTACH_ADDRESS_TO_PARTY, partyForm, addressId);
+    }
+
+    
+    
     private void executeDml(String sql, PartyForm partyForm, long addressId) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("partyId", partyForm.getRecordMetaData().getId());
         namedParameters.addValue("addressId", addressId);
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
         jdbc.update(sql, namedParameters);
     }
-    
-    
+
+        
     private enum PartyColumn {
         id, version, inactive, party_name, notes;
     }

@@ -49,6 +49,8 @@ public interface PartyRepository {
 
     void addAddressToParty(PartyForm partyForm, long addressId);
 
-    public void removeAddressFromParty(PartyForm partyForm, long addressId);
+    void removeAddressFromParty(PartyForm partyForm, long addressId);
+
+    void attachAddressToParty(PartyForm partyForm, long addressId);
 
 }

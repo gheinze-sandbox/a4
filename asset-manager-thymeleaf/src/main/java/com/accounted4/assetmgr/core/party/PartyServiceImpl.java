@@ -76,5 +76,10 @@ public class PartyServiceImpl implements PartyService {
     public void removeAddressFromParty(PartyForm partyForm, long selectedAddressId) {
         partyRepository.removeAddressFromParty(partyForm, selectedAddressId);
     }
+
+    @Override
+    public void attachAddressToParty(PartyForm partyForm, long addressId) {
+        partyRepository.attachAddressToParty(partyForm, addressId);
+    }
     
 }

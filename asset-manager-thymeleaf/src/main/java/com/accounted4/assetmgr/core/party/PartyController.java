@@ -97,6 +97,24 @@ public class PartyController {
 
     
     @Layout(value = "core/layouts/default")
+    @RequestMapping(value = "core/party/addressAttach", method = RequestMethod.POST)
+    public ModelAndView attachAddress(
+            @ModelAttribute PartyForm partyForm,
+            @RequestParam long addressId) {
+
+        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+
+        partyService.attachAddressToParty(partyForm, addressId);
+        PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
+        mav.addObject(FORM_BEAN_NAME, retrievedPartyForm);
+        mav.addObject(ADDRESS_FORM_BEAN_NAME, new AddressForm());
+
+        return mav;
+
+    }
+
+    
+    @Layout(value = "core/layouts/default")
     @RequestMapping(value = "core/party/{id}")
     public String getParty(Model model, @PathVariable long id) {
         PartyForm party = partyService.getPartyById(id);
