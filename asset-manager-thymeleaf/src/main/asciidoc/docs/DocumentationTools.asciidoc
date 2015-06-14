@@ -1,0 +1,181 @@
+== Documentation Tools
+
+Documentation is created in http://asciidoctor.org[Asciidoctor] format.
+
+Formatting commands can be referenced from the http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[Asciidoctor Syntax Quick Reference].
+See also this https://powerman.name/doc/asciidoc[Cheat Sheet].
+
+=== Editing with Live Preview
+
+A number of tools and plugins exist which use the `asciidoctor` tool to convert a source `asciidoc` file into an `html` or `pdf` target file.
+See the http://asciidoctor.org/docs/editing-asciidoc-with-live-preview/[Live Preview] page for a list of such tools and implementation instructions.
+
+The `JavaFX` program is easy to download and run on any Java platform. It has side-by-side panes for
+the source `asciidoc` document and the rendered `html`. The rendered html is updated live as the 
+source document changes.  If functions fairly well.  It is a little bit slow.  It would be good if there were
+a setting to render on save rather than on each keystroke.  The options for generating to `pdf` and generating
+to `html` do work, but seemed a bit flaky (requiring an ocassional restart).
+
+The https://wiki.gnome.org/Apps/Web[Web] Gnome browser (formerly http://projects.gnome.org/epiphany/[Epiphany]) 
+seems to be the preferred method of viewing
+a rendered `asciidoc` file during editing. Apparently the `guard` mechanism described below is included
+with `Epiphany` and scroll offset is maintained during a refresh when the source has been modified.
+
+==== Live Preview with Browser Plugins
+
+The Asciidoctor `Live Preview` web browser plugin (https://addons.mozilla.org/fr/firefox/addon/asciidoctorjs-live-preview[FireFox],
+https://chrome.google.com/webstore/detail/asciidoctorjs-live-previe/iaalpfgpbocpdfblpnhhgllgbdbchmia[Chrome])
+will render an `asciidoc` file into `html`.  Opening an `asciidoc` file in the browser runs the `asciidoctor` conversion
+tool on the source `asciidoc` file rendering an `html` target in the browser. However, a change in the source file
+requires a browser refresh of the page to see the new result. Another browser plugin can be used to update a page upon change.
+Putting this together requires 3 components plus the `Live Preview` browser extension:
+
+* `guard` to monitor the file system for changes
+* `guard-livereload` -a `guard` plugin to communicate with the browser extension
+* `live reload browser extension` -a browser extension to communicate with the `livereload` os guard monitor
+* `live preview browser extension` -a browser extension to render an `asciidoc` file as `html`
+
+`guard` and many `asciidcotor` tools are based on `Ruby` using `RubyGems` (the `Ruby` package manager).
+The following actions were taken to prepare the environment for the `asciidoctor` conversion tool and the `guard`/`live-reload`
+environment on an Ubuntu system:
+
+.Install Ruby
+[source,bash]
+----
+sudo apt-get install ruby
+----
+
+.Install the `bundler` RubyGem
+[source,bash]
+----
+gem install bundler
+----
+
+.Create a template `Gemfile` in the project directory (src/main/asciidoc/)
+[source,bash]
+----
+bundler init
+----
+
+Edit the generated `Gemfile` with the following contents:
+[source,bash]
+----
+source 'https://rubygems.org'
+
+gem 'guard'
+gem 'guard-shell'
+gem 'guard-livereload'
+gem 'asciidoctor'
+----
+
+* `guard` is the file system monitor
+* `guard-shell` is a `guard` extension that allows running os commands when files are altered
+* `guard-livereload` is a `guard` extension that provides communication with a `livereload` browser plugin
+* `asciidoctor` is the tool for converting a file from an `asciidoc` format into a target format
+
+.Install the bundle defined by the `Gemfile` (this will install the listed packages)
+[source,bash]
+----
+bundle install
+----
+
+.Create a `Guard` configuration file: `(src/main/asciidoc/Guardfile)`
+
+Contents:
+
+[source,bash]
+----
+Bundler.require(:default)
+
+guard 'livereload' do
+  watch(/^docs\/.*\.asciidoc$/) 
+end
+----
+
+This will trigger the `livereload` `guard` extension each time a change is detected in the `docs` subdirectory
+with files ending in `.asciidoc` (i.e. _docs/*.asciidoc_).
+
+If the `livereload` extension where not used, a shell watch could be added to convert the file from
+`asciidoc` format into `html` and place the result on the file system:
+
+[source,bash]
+----
+guard 'shell' do
+  watch(/^mydoc\.adoc$/) {|m|
+    Asciidoctor.convert_file(m[0], :in_place => true)
+  }
+end
+----
+
+.Install the LiveReload browser Extension
+See the browser specific installations: https://addons.mozilla.org/fr/firefox/addon/asciidoctorjs-live-preview[FireFox],
+https://chrome.google.com/webstore/detail/asciidoctorjs-live-previe/iaalpfgpbocpdfblpnhhgllgbdbchmia[Chrome]
+
+.Start Documenting
+
+At this stage installation is complete and  `guard` can be started on the os:
+
+[source,bash]
+----
+guard start
+----
+
+The `Asciidoctor` file can be opened in the browser and the `Asciidoctor Live Preview` plugin will render the
+page in html.  If the `LiveReload` plugin is enabled for the page (by clicking the `LiveReload` extension icon), then
+the extension will communicate with the `guard` started on the os and every time a file change is detected on 
+the os, the browser page will be refreshed showing the latest version of the document.
+
+=== Maven Plugin
+
+Maven plugins exist for:
+
+* converting asciidoc files `asciidoctor-maven-plugin`
+* applying asciidoc conversions when generating a maven site
+* applying asciidoc conversions when generating javadocs
+
+==== Generated Documents
+
+A http://asciidoctor.org/docs/asciidoctor-maven-plugin/[Asciidoctor Maven Plugin] can be used to 
+read *src* `asciidoc` files and generate the `html` and or `pdf` documentation in the *target* directory.
+
+.asciidoctor-maven-plugin
+[source,xml]
+----
+    </build>
+
+        </plugins>
+        
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>1.5.2</version> 
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>src/main/asciidoc/docs</sourceDirectory>
+                    <backend>html</backend>
+                    <doctype>book</doctype>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+        
+    </build>
+----
+
+==== mvn site
+
+Maven Site documentation can also be prepared in `asciidoc` format by adding a dependency on
+the `asciidoctor-mave-plugin` in the `maven-site-plugin` in the `build` section.
+
+==== Javadocs
+
+Javadocs can use `asciidoc` syntax.
+

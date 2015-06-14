@@ -13,6 +13,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>1.8</java-version>
+        <maven-compiler.version>3.3</maven-compiler.version>
+        <maven-resource.version>2.7</maven-resource.version>
+        <maven-war.version>2.6</maven-war.version>
+        <maven-javadoc.version>2.10.3</maven-javadoc.version>
         <io.spring.platform-version>1.1.1.RELEASE</io.spring.platform-version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <!-- <lombok.version>1.16.2</lombok.version> -->
@@ -21,6 +25,7 @@
         <jsdialect.version>1.0.2</jsdialect.version>
         <findbugs.version>3.0.1</findbugs.version>
         <javadoc.version>2.10.3</javadoc.version>
+        <asciidoctor.version>1.5.2</asciidoctor.version>
     </properties>
     
     <dependencyManagement>
@@ -206,7 +211,9 @@
     </dependencies>
     
     <build>
+        
         <plugins>
+            
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -215,24 +222,27 @@
                     <path>/</path>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>${maven-compiler.version}</version>
                 <configuration>
                     <source>${java-version}</source>
                     <target>${java-version}</target>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>${maven-war.version}</version>
                 <configuration>
                     <warName>asset-manager-1.0.0-SNAPSHOT</warName>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -246,14 +256,36 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
+                <version>${maven-resource.version}</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor.version}</version> 
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>src/main/asciidoc/docs</sourceDirectory>
+                    <backend>html</backend>
+                    <doctype>book</doctype>
+                </configuration>
+            </plugin>
+            
         </plugins>
         
     </build>
@@ -278,7 +310,29 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${javadoc.version}</version>
             </plugin>
-        
+<!--        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc.version}</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <doclet>org.asciidoctor.Asciidoclet</doclet>
+                    <docletArtifact>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoclet</artifactId>
+                        <version>${asciidoctor.version}</version>
+                    </docletArtifact>
+                    <overview>src/main/java/overview.adoc</overview>
+                    <additionalparam>
+                        -base-dir ${project.basedir}
+                        -attribute "name=${project.name}"
+                        -attribute "version=${project.version}"
+                        -attribute "title-link=http://example.com[${project.name} ${project.version}]"
+                    </additionalparam>
+                </configuration>
+            </plugin>
+-->
         </plugins>
         
     </reporting>
