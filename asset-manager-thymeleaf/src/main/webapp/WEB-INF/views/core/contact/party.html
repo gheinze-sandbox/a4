@@ -77,12 +77,12 @@ contact numbers, etc.
             <div th:if="${partyForm.recordMetaData.editMode}">
                 
                 <!-- A form to show an "Address" modal dialog -->
-                <form id="addressModalForm" class="form-horizontal" method="post" th:action="@{/core/partyAddress}" th:object="${addressForm}" >
+                <form id="addressModalForm" class="form-horizontal" method="post" th:action="@{/core/party/address}" th:object="${addressForm}" >
                     <div th:replace="core/contact/address :: modalAddress"></div>
                 </form>
                 
                 <!-- A form to request a deletion of an "Address" mapping to a "Party" -->
-                <form id="partyAddressDelete" method="post" th:action="@{/core/partyAddressDelete}">
+                <form id="partyAddressDelete" method="post" th:action="@{/core/party/addressDelete}">
                     <input type="hidden" name="selectedAddressId" id="selectedAddressId" value=""/>
                 </form>
                 
@@ -190,7 +190,7 @@ contact numbers, etc.
                     
                     console.log($item);
                     $.ajax({
-                        url: getContextPath() + 'core/party/addressAttach',
+                        url: getContextPath() + 'core/party/addressAttach?${_csrf.parameterName}=${_csrf.token}',
                         type: 'POST',
                         data: { addressId: value }
                     });

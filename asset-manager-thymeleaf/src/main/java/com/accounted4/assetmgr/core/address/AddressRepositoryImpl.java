@@ -50,20 +50,8 @@ public class AddressRepositoryImpl implements AddressRepository {
      */
     @Override
     public long save(AddressForm addressForm) {
-        
-        // most bind parameters can be retrieved directly from form attributes
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(addressForm);
-        
-        // these bind parameters are not available from the form and need to be manually added
-        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", addressForm.getRecordMetaData().isInactive());
-        
-        //TODO: perhaps the return should include version (record meta data?)
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.update(INSERT_ADDRESS, namedParameters, keyHolder, new String[] {"id"});
-
-        return keyHolder.getKey().longValue();
-    
+        return jdbc.saveAndReturnKey(INSERT_ADDRESS, namedParameters);
     }
 
     
@@ -95,7 +83,7 @@ public class AddressRepositoryImpl implements AddressRepository {
     @Override
     public void update(AddressForm addressForm) {
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(addressForm);
-        jdbc.update(UPDATE_ADDRESS, namedParameters);
+        jdbc.updateWithConcurrencyCheck(UPDATE_ADDRESS, namedParameters);
     }
 
     

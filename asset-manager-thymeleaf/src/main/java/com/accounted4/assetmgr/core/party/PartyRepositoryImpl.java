@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 
@@ -48,21 +50,12 @@ public class PartyRepositoryImpl implements PartyRepository {
     /**
      * {@inheritDoc}
      * @param partyForm backing bean of the ui party form
+     * @return The id of the newly created record.
      */
     @Override
-    public void save(PartyForm partyForm) {
-        
-        // most bind parameters can be retrieved directly from form attributes
-        ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyForm);
-        
-        // these bind parameters are not available from the form and need to be manually added
-        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", partyForm.getRecordMetaData().isInactive());
-        
-        jdbc.update(INSERT_PARTY, namedParameters);
-        
-        // although we could be more efficient and use a "returning" clause to get the id and version
-        // (and using SimpleJdbcInsert), performing an extra query may be more portable across dbs
+    public long save(PartyForm partyForm) {
+        ExtensibleBeanPropertySqlParameterSource namedParameters =  new ExtensibleBeanPropertySqlParameterSource(partyForm);
+        return jdbc.saveAndReturnKey(INSERT_PARTY, namedParameters);
     }
 
 
@@ -75,25 +68,25 @@ public class PartyRepositoryImpl implements PartyRepository {
             ;
     
     @Override
-    public void update(PartyForm partyForm) {
+    public int update(PartyForm partyForm) {
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyForm);
-        jdbc.update(UPDATE_PARTY, namedParameters);
+        return jdbc.updateWithConcurrencyCheck(UPDATE_PARTY, namedParameters);
     }
     
 
     /*
      * ===================================================================
      */
-    private static final String DELETE_PARTY =
+    private static final String INACTIVATE_PARTY =
             "UPDATE party SET inactive = true" +
             "  WHERE org_id = :orgId AND id = :id"  // TODO: do we care about version on delete??
             ;
     
     @Override
-    public void deleteParty(long id) {
+    public int inactivateParty(long id) {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
         namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        jdbc.update(DELETE_PARTY, namedParameters);
+        return jdbc.updateWithConcurrencyCheck(INACTIVATE_PARTY, namedParameters);
     }
     
     
@@ -141,8 +134,6 @@ public class PartyRepositoryImpl implements PartyRepository {
     @Override
     public List<PartyForm> findParties(PartyForm partyFormTemplate) {
         ExtensibleBeanPropertySqlParameterSource namedParameters = new ExtensibleBeanPropertySqlParameterSource(partyFormTemplate);
-        namedParameters.addValue("orgId", SessionUtil.getSessionOrigId());
-        namedParameters.addValue("inactive", partyFormTemplate.getRecordMetaData().isInactive());
         return jdbc.query(FIND_PARTIES, namedParameters, partyRowMapper);
     }
 

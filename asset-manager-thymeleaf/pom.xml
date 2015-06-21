@@ -293,7 +293,7 @@
             
             <!--
                 Standalone Javadocs (i.e. mvn javadoc:javadoc, not mvn site which is part of reporting
-            -->
+                Commented out so that it does not run on each build in development.
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -316,6 +316,7 @@
                     </docletArtifact>
                 </configuration>
             </plugin>
+            -->
             
         </plugins>
         

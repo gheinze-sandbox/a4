@@ -30,8 +30,8 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public void deleteParty(PartyForm partyForm) {
-        partyRepository.deleteParty(partyForm.getRecordMetaData().getId());
+    public void inactivateParty(PartyForm partyForm) {
+        partyRepository.inactivateParty(partyForm.getRecordMetaData().getId());
     }
 
     @Override

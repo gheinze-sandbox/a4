@@ -22,19 +22,28 @@ public final class ExtensibleBeanPropertySqlParameterSource extends AbstractSqlP
     private final BeanPropertySqlParameterSource beanPropertySqlParameterSource;
 
     
+    /**
+     * Create a map of parameters to bind to a jdbc call based on a form object
+     * but also allowing the addition of more properties if desired.
+     * orgId will always be added to the map from session.
+     * RecordMetaData holders will automatically have meta data added to parameter map.
+     * @param object 
+     */
     public ExtensibleBeanPropertySqlParameterSource(Object object) {
         this.beanPropertySqlParameterSource = new BeanPropertySqlParameterSource(object);
+        addValue("orgId", SessionUtil.getSessionOrigId());
         if (object instanceof RecordMetaDataHolder) {
             RecordMetaData metaData = ((RecordMetaDataHolder) object).getRecordMetaData();
-            addValue("orgId", SessionUtil.getSessionOrigId());
             addValue("inactive", metaData.isInactive());
             addValue("id", metaData.getId());
             addValue("version", metaData.getVersion());
+
         }
     }
 
-    public void addValue(String paramName, Object value) {
+    public ExtensibleBeanPropertySqlParameterSource addValue(String paramName, Object value) {
         mapSqlParameterSource.addValue(paramName, value);
+        return this;
     }
 
     @Override

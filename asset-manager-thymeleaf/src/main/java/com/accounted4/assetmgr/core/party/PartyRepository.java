@@ -12,13 +12,24 @@ public interface PartyRepository {
      * 
      * @param partyForm The form bean backing the "party" page containing
      * all the fields required to save the record to the database.
+     * @return The id of the newly created Party
      */
-    void save(PartyForm partyForm);
+    long save(PartyForm partyForm);
     
     
-    void update(PartyForm partyForm);
+    /**
+     * 
+     * @param partyForm
+     * @return The number of rows affected.
+     */
+    int update(PartyForm partyForm);
     
-    void deleteParty(long id);
+    /**
+     * 
+     * @param id The id of the Party to delete.
+     * @return The number of rows affected.
+     */
+    int inactivateParty(long id);
     
     /**
      * Find a "party" based on the id. The party is retrieved whether it

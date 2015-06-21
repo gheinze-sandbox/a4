@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,9 +28,29 @@ public class ResultCheckingJdbcTemplate extends NamedParameterJdbcTemplate{
         super(dataSource);
     }
     
+
+    /**
+     * Call for an insert, have the key returned.
+     * 
+     * @param sql
+     * @param paramSource
+     * @return
+     * @throws DataAccessException 
+     */
+    public long saveAndReturnKey(String sql, SqlParameterSource paramSource) throws DataAccessException {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        update(sql, paramSource, keyHolder, RecordMetaData.keyColumn);
+        return keyHolder.getKey().longValue();
+    }
     
-    @Override
-    public int update(String sql, SqlParameterSource paramSource) throws DataAccessException {
+     /**
+      * Perform the normal jdbc update, but expect exactly one row to be affected.
+      * @param sql
+      * @param paramSource
+      * @return
+      * @throws DataAccessException 
+      */   
+    public int updateWithConcurrencyCheck(String sql, SqlParameterSource paramSource) throws DataAccessException {
         
         int rowsUpdated = super.update(sql, paramSource);
         

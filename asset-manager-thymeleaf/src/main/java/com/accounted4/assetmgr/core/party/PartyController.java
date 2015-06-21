@@ -161,7 +161,7 @@ public class PartyController {
     @Layout(value = "core/layouts/default")
     @RequestMapping(method = RequestMethod.POST, params="deleteAction")
     public ModelAndView deleteParty(@ModelAttribute PartyForm partyForm) {
-        partyService.deleteParty(partyForm);
+        partyService.inactivateParty(partyForm);
         return getPartyModelAndView()
                 .addObject("notification", partyForm.getPartyName() + " has been inactivated.");
     }
@@ -183,7 +183,7 @@ public class PartyController {
     // ====================================
     
     @Layout(value = "core/layouts/default")
-    @RequestMapping(value = "Address", method = RequestMethod.POST, params="saveAddressAction")
+    @RequestMapping(value = "address", method = RequestMethod.POST, params="saveAddressAction")
     public ModelAndView savePartyAddress(
             @ModelAttribute PartyForm partyForm
             ,@Valid @ModelAttribute AddressForm addressForm
@@ -191,46 +191,38 @@ public class PartyController {
             ,@RequestParam int modalAddressVersion
             ,Errors errors) {
         
-        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
+        if (errors.hasErrors()) {
+            return new ModelAndView(ViewRoute.PARTY);
+        }
         
         if (modalAddressId > 0L) {
             // Update mode
             addressForm.getRecordMetaData().setId(modalAddressId);
             addressForm.getRecordMetaData().setVersion(modalAddressVersion);
             addressService.updateAddress(addressForm);
-            PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
-            mav.addObject(PARTY_MODEL_NAME, retrievedPartyForm);
-            mav.addObject(ADDRESS_MODEL_NAME, new AddressForm());
         } else {
             // Insert mode
-            if (!errors.hasErrors()) {
-                partyService.addAddressToParty(partyForm, addressForm);
-                PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
-                mav.addObject(PARTY_MODEL_NAME, retrievedPartyForm);
-                mav.addObject(ADDRESS_MODEL_NAME, new AddressForm());
-            }
+            partyService.addAddressToParty(partyForm, addressForm);
         }
         
-        return mav;
+        PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
+        
+        return getPartyModelAndView(retrievedPartyForm);
         
     }
 
     
     @Layout(value = "core/layouts/default")
-    @RequestMapping(value = "core/partyAddressDelete", method = RequestMethod.POST)
+    @RequestMapping(value = "addressDelete", method = RequestMethod.POST)
     public ModelAndView removePartyAddressMapping(
             @ModelAttribute PartyForm partyForm,
             @RequestParam long selectedAddressId) {
 
-        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
-
         partyService.removeAddressFromParty(partyForm, selectedAddressId);
         PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
-        mav.addObject(PARTY_MODEL_NAME, retrievedPartyForm);
-        mav.addObject(ADDRESS_MODEL_NAME, new AddressForm());
-
-        return mav;
-
+        
+        return getPartyModelAndView(retrievedPartyForm);
+        
     }
 
     
@@ -240,14 +232,10 @@ public class PartyController {
             @ModelAttribute PartyForm partyForm,
             @RequestParam long addressId) {
 
-        ModelAndView mav = new ModelAndView(ViewRoute.PARTY);
-
         partyService.attachAddressToParty(partyForm, addressId);
         PartyForm retrievedPartyForm = partyService.getPartyById(partyForm.getRecordMetaData().getId());
-        mav.addObject(PARTY_MODEL_NAME, retrievedPartyForm);
-        mav.addObject(ADDRESS_MODEL_NAME, new AddressForm());
 
-        return mav;
+        return getPartyModelAndView(retrievedPartyForm);
 
     }
 

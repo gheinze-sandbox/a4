@@ -14,7 +14,7 @@ public interface PartyService {
     
     void updateParty(PartyForm partyForm);
 
-    void deleteParty(PartyForm partyForm);
+    void inactivateParty(PartyForm partyForm);
 
     PartyForm getPartyById(long id);
     
