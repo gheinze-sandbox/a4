@@ -12,6 +12,10 @@ include::Security.asciidoc[]
 
 include::DocumentationTools.asciidoc[]
 
+== IDE
+
+Saved as a maven project, but if opened within an IDE, requires the https://projectlombok.org/download.html[Project Lombok] plugin.
+
 == Notification Engine
 
 == Modules

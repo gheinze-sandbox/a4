@@ -26,6 +26,7 @@
         <findbugs.version>3.0.1</findbugs.version>
         <javadoc.version>2.10.3</javadoc.version>
         <asciidoctor.version>1.5.2</asciidoctor.version>
+        <asciidoclet.version>${asciidoctor.version}</asciidoclet.version>
     </properties>
     
     <dependencyManagement>
@@ -266,6 +267,10 @@
                 </configuration>
             </plugin>
             
+            <!-- 
+                For rendering source Aciidoctor files found in src/main/asciidoc/docs
+                to html documents in the target/docs directory
+            -->
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -283,6 +288,32 @@
                     <sourceDirectory>src/main/asciidoc/docs</sourceDirectory>
                     <backend>html</backend>
                     <doctype>book</doctype>
+                </configuration>
+            </plugin>
+            
+            <!--
+                Standalone Javadocs (i.e. mvn javadoc:javadoc, not mvn site which is part of reporting
+            -->
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadoc.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doclet>org.asciidoctor.Asciidoclet</doclet>
+                    <docletArtifact>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoclet</artifactId>
+                        <version>${asciidoclet.version}</version>
+                    </docletArtifact>
                 </configuration>
             </plugin>
             
@@ -304,13 +335,19 @@
                 </configuration>
             </plugin>
 
-            <!-- Javadocs -->
+            <!-- Javadocs 
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${javadoc.version}</version>
             </plugin>
-<!--        
+-->
+            
+            <!--
+                Javadocs using an Asciidoctor transformer.
+                Report section for "site" generation, Build section for standalone (mvn javadoc:javadoc)
+                
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
