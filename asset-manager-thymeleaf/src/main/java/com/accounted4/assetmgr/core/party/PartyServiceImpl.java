@@ -1,10 +1,12 @@
 package com.accounted4.assetmgr.core.party;
 
+import com.accounted4.assetmgr.core.ConsumerServiceWrapper;
 import com.accounted4.assetmgr.core.SelectItem;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.core.address.AddressRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,5 +83,17 @@ public class PartyServiceImpl implements PartyService {
     public void attachAddressToParty(PartyForm partyForm, long addressId) {
         partyRepository.attachAddressToParty(partyForm, addressId);
     }
+
+    @Override
+    public ConsumerServiceWrapper<PartyForm> getWrappedSaveService() {
+        return new ConsumerServiceWrapper<>(this::saveParty, "saved");
+    }
+
+    
+    @Override
+    public ConsumerServiceWrapper<PartyForm> getWrappedUpdateService() {
+        return new ConsumerServiceWrapper<>(this::updateParty, "updated");
+    }
+
     
 }

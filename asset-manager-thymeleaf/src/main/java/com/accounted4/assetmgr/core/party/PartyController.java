@@ -1,11 +1,11 @@
 package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.config.ViewRoute;
+import com.accounted4.assetmgr.core.ConsumerServiceWrapper;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.core.address.AddressService;
 import com.accounted4.assetmgr.support.web.Layout;
 import java.util.List;
-import java.util.function.Consumer;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -55,20 +55,17 @@ public class PartyController {
      */
     @Layout(value = "core/layouts/default")
     @RequestMapping(method = RequestMethod.GET)
+    
     public ModelAndView getPartyEntryForm() {
         return getPartyModelAndView();
     }
     
     
-    /**
-     * Routes to a Party entry form pre-populated with the party specified by an id.
-     * @param id The id of the party to use when pre-populating the form.
-     * @return 
-     */
     @Layout(value = "core/layouts/default")
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public ModelAndView getParty(@PathVariable long id) {
-        PartyForm party = partyService.getPartyById(id);
+    @RequestMapping(value = "{partyId}", method = RequestMethod.GET)
+    
+    public ModelAndView getPopulatedPartyEntryForm(@PathVariable long partyId) {
+        PartyForm party = partyService.getPartyById(partyId);
         return getPartyModelAndView(party);
     }
 
@@ -76,15 +73,16 @@ public class PartyController {
     /**
      * Route to a list of urls of Parties with names matching the
      * search template. In particular, a case-insensitive search of the Party name.
-     * @param partyForm template upon which the search is based
+     * @param partySearchTemplate template upon which the search is based
      * @param bindingResult Form validation object to which error messages can be attached
      * @return a route to a page based on a selection list of Parties (urls)
      */
     @Layout(value = "core/layouts/default")
     @RequestMapping(method = RequestMethod.POST, params="findAction")
-    public ModelAndView findParty(@ModelAttribute PartyForm partyForm, BindingResult bindingResult) {
+    
+    public ModelAndView findParty(@ModelAttribute PartyForm partySearchTemplate, BindingResult bindingResult) {
         
-        List<PartyForm> parties = partyService.findParties(partyForm);
+        List<PartyForm> parties = partyService.findParties(partySearchTemplate);
         
         if (parties.isEmpty()) {
             bindingResult.rejectValue("partyName", "find.error", "No parties found matching search criteria.");
@@ -106,73 +104,64 @@ public class PartyController {
     // Party Persisitence
     // ====================================
     
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(method = RequestMethod.POST, params="saveAction")
+    
+    public ModelAndView saveParty(@Valid @ModelAttribute PartyForm party, Errors formValidationErrors) {
+        return persist(party, formValidationErrors, partyService.getWrappedSaveService());
+    }
+
+    
+    @Layout(value = "core/layouts/default")
+    @RequestMapping(method = RequestMethod.POST, params="updateAction")
+    
+    public ModelAndView updateParty(@Valid @ModelAttribute PartyForm party, Errors formValidationErrors) {
+        return persist(party, formValidationErrors, partyService.getWrappedUpdateService());
+    }
+
+
     /*
      * Save or Update a Party, routing back to the Party entry form with a pre-poplulated party.
     */
-    private ModelAndView persist(PartyForm partyForm, Errors errors, Consumer<PartyForm> action, String msg) {
+    private ModelAndView persist(PartyForm party, Errors formValidationErrors, ConsumerServiceWrapper actionWrapper) {
         
-        if (errors.hasErrors()) {
+        if (formValidationErrors.hasErrors()) {
             return new ModelAndView(ViewRoute.PARTY);
         }
         
-        action.accept(partyForm);
+        actionWrapper.getServiceAction().accept(party);
         
-        PartyForm retrievedPartyForm = partyService.getPartyByName(partyForm.getPartyName());
+        PartyForm retrievedPartyForm = partyService.getPartyByName(party.getPartyName());
         
-        return getPartyModelAndView(retrievedPartyForm)
-                .addObject("notification", retrievedPartyForm.getPartyName() + " has been " + msg + ".");
+        ModelAndView mav =  getPartyModelAndView(retrievedPartyForm);
+        String notificationMessage = String.format("%s has been %s.", retrievedPartyForm.getPartyName(), actionWrapper.getCompletionMessage());
+        addNotificationMessageToMav(mav, notificationMessage);
+        
+        return mav;
         
     }
     
+
+    // TODO: Delete should delete and inactivate should be a separate call
     
-    /**
-     * Persist a new party to a backing data store.
-     * @param partyForm the party to be persisted
-     * @param errors form validation errors
-     * @return a route back to a populated Party form
-     */
-    @Layout(value = "core/layouts/default")
-    @RequestMapping(method = RequestMethod.POST, params="saveAction")
-    public ModelAndView saveParty(@Valid @ModelAttribute PartyForm partyForm, Errors errors) {
-        Consumer<PartyForm> action = (PartyForm x) -> partyService.saveParty(x);
-        return persist(partyForm, errors, action, "saved");
-    }
-
-    
-    /**
-     * Persist an existing party to a backing data store.
-     * @param partyForm the party to be persisted
-     * @param errors form validation errors
-     * @return a route back to a populated Party form
-     */
-    @Layout(value = "core/layouts/default")
-    @RequestMapping(method = RequestMethod.POST, params="updateAction")
-    public ModelAndView updateParty(@Valid @ModelAttribute PartyForm partyForm, Errors errors) {
-        Consumer<PartyForm> action = (PartyForm x) -> partyService.updateParty(x);
-        return persist(partyForm, errors, action, "updated");
-    }
-
-
-    /**
-     * Removes an exiting Party from the backing data store.
-     * @param partyForm
-     * @return 
-     */
     @Layout(value = "core/layouts/default")
     @RequestMapping(method = RequestMethod.POST, params="deleteAction")
+    
     public ModelAndView deleteParty(@ModelAttribute PartyForm partyForm) {
         partyService.inactivateParty(partyForm);
-        return getPartyModelAndView()
-                .addObject("notification", partyForm.getPartyName() + " has been inactivated.");
+        ModelAndView mav = getPartyModelAndView();
+        String notificationMessage = String.format("%s has been inactivated.", partyForm.getPartyName());
+        addNotificationMessageToMav(mav, notificationMessage);
+        return mav;
     }
 
     
     /**
      * Same effect as GETting a new entry form, but handled via a POST.
-     * @return 
      */
     @Layout(value = "core/layouts/default")
     @RequestMapping(method = RequestMethod.POST, params="clearAction")
+    
     public ModelAndView clearParty() {
         return getPartyModelAndView();
     }
@@ -184,6 +173,7 @@ public class PartyController {
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "address", method = RequestMethod.POST, params="saveAddressAction")
+    
     public ModelAndView savePartyAddress(
             @ModelAttribute PartyForm partyForm
             ,@Valid @ModelAttribute AddressForm addressForm
@@ -214,6 +204,7 @@ public class PartyController {
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "addressDelete", method = RequestMethod.POST)
+    
     public ModelAndView removePartyAddressMapping(
             @ModelAttribute PartyForm partyForm,
             @RequestParam long selectedAddressId) {
@@ -228,6 +219,7 @@ public class PartyController {
     
     @Layout(value = "core/layouts/default")
     @RequestMapping(value = "addressAttach", method = RequestMethod.POST)
+    
     public ModelAndView attachAddress(
             @ModelAttribute PartyForm partyForm,
             @RequestParam long addressId) {
@@ -258,6 +250,13 @@ public class PartyController {
         mav.addObject(PARTY_MODEL_NAME, partyForm);
         mav.addObject(ADDRESS_MODEL_NAME, addressForm);
         return mav;
+    }
+
+    
+    private static final String NOTIFICATION_MSG = "notification";
+    
+    private void addNotificationMessageToMav(ModelAndView mav, String message) {
+         mav.addObject(NOTIFICATION_MSG, message);
     }
 
 }

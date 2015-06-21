@@ -1,5 +1,6 @@
 package com.accounted4.assetmgr.core.party;
 
+import com.accounted4.assetmgr.core.ConsumerServiceWrapper;
 import com.accounted4.assetmgr.core.SelectItem;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import java.util.List;
@@ -30,4 +31,8 @@ public interface PartyService {
 
     void attachAddressToParty(PartyForm partyForm, long addressId);
 
+    ConsumerServiceWrapper<PartyForm> getWrappedSaveService();
+    
+    ConsumerServiceWrapper<PartyForm> getWrappedUpdateService();
+    
 }
