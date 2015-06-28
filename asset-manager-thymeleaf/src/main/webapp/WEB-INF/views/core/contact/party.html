@@ -133,7 +133,13 @@ contact numbers, etc.
             <!-- Note: the script should fall within the fragment to be included in the "default" template -->
             <script th:inline="javascript">
                 
-                /* Pre-populate address modal */
+                /* Pre-populate address modal 
+                 * 
+                 *  The AddressForm backing bean never comes to the Party populated: it acts as a
+                 *  staging area to operate on a specific address.  As such, when an address is selected
+                 *  on the form, all the values for the selected address need to be copied into the form
+                 *  and in the case of the Record Meta data: into the backing AddressForm.
+                 */
                 function prepareAddressModal(srcAddress) {
                     document.getElementById('line1').value = (srcAddress.line1|| "");
                     document.getElementById('line2').value = (srcAddress.line2|| "");
@@ -142,8 +148,11 @@ contact numbers, etc.
                     document.getElementById('postalCode').value = (srcAddress.postalCode|| "");
                     document.getElementById('countryCode').value = (srcAddress.countryCode|| "");
                     document.getElementById('note').value = (srcAddress.note|| "");
-                    document.getElementById('modalAddressId').value = (srcAddress.recordMetaData.id|| "");
-                    document.getElementById('modalAddressVersion').value = (srcAddress.recordMetaData.version|| "");
+                    
+                    document.getElementById('metaData.id').value = (srcAddress.recordMetaData.id|| "");
+                    document.getElementById('metaData.version').value = (srcAddress.recordMetaData.version|| "");
+                    document.getElementById('metaData.inactive').value = (srcAddress.recordMetaData.inactive|| "false");
+                    document.getElementById('metaData.editMode').value = (srcAddress.recordMetaData.editMode|| "false");
                 }
                     
                 /**

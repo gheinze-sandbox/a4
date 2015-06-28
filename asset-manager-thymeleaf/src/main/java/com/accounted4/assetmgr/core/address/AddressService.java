@@ -1,7 +1,5 @@
 package com.accounted4.assetmgr.core.address;
 
-import java.util.List;
-
 /**
  *
  * @author gheinze

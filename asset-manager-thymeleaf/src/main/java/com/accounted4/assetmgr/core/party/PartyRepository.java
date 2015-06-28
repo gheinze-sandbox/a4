@@ -58,9 +58,7 @@ public interface PartyRepository {
      */
     List<PartyForm> findParties(PartyForm partyFormTemplate);
 
-    void addAddressToParty(PartyForm partyForm, long addressId);
-
-    void removeAddressFromParty(PartyForm partyForm, long addressId);
+    void detachAddressFromParty(PartyForm partyForm, long addressId);
 
     void attachAddressToParty(PartyForm partyForm, long addressId);
 

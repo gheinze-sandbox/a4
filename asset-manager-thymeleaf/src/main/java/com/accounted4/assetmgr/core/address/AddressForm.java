@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 /**
@@ -71,7 +70,6 @@ public class AddressForm implements RecordMetaDataHolder {
 
     }
  
-    private static final String QUOTE = "\"";
     
     /**
      *  A json representation of the record in order to support client side
@@ -89,32 +87,9 @@ public class AddressForm implements RecordMetaDataHolder {
         } catch (IOException ex) {
             LOG.error("Failed convert to json: " + this.toString(), ex);
         }
-//        StringBuilder result = new StringBuilder();
-//        
-//        result.append("{");
-//        result.append(QUOTE + "id" + QUOTE + ": ").append(QUOTE + recordMetaData.getId() + QUOTE + ",");
-//        result.append(QUOTE + "version" + QUOTE + ": ").append(QUOTE + recordMetaData.getVersion() + QUOTE + ",");
-//        result.append(QUOTE + "line1" + QUOTE + ": ").append(QUOTE + nvl(line1) + QUOTE + ",");
-//        result.append(QUOTE + "line2" + QUOTE + ": ").append(QUOTE + nvl(line2) + QUOTE + ",");
-//        result.append(QUOTE + "city" + QUOTE + ": ").append(QUOTE + nvl(city) + QUOTE + ",");
-//        result.append(QUOTE + "subdivisionCode" + QUOTE + ": ").append(QUOTE + nvl(subdivisionCode, "ON") + QUOTE + ",");
-//        result.append(QUOTE + "postalCode" + QUOTE + ": ").append(QUOTE + nvl(postalCode) + QUOTE + ",");
-//        result.append(QUOTE + "countryCode" + QUOTE + ": ").append(QUOTE + nvl(countryCode) + QUOTE + ",");
-//        result.append(QUOTE + "note" + QUOTE + ": ").append(QUOTE + nvl(note) + QUOTE );
-//        result.append("}");
-//        
-//        return result.toString();
 
         return json;
         
-    }
-
-    private String nvl(String src) {
-        return nvl(src, "");
-    }
-    
-    private String nvl(String src, String defaultValue) {
-        return (null == src) ? defaultValue : src;
     }
     
 }

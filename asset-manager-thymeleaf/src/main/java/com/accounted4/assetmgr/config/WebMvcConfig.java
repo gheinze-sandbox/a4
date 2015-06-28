@@ -22,7 +22,10 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import com.accounted4.assetmgr.Application;
+import com.accounted4.assetmgr.core.RecordMetaDataResolver;
 import com.accounted4.assetmgr.support.web.ThymeleafLayoutInterceptor;
+import java.util.List;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 
@@ -39,7 +42,7 @@ class WebMvcConfig extends WebMvcConfigurationSupport {
     private static final String RESOURCES_LOCATION = "/resources/";
     private static final String RESOURCES_HANDLER = RESOURCES_LOCATION + "**";
 
-    
+
     @Override
     public RequestMappingHandlerMapping requestMappingHandlerMapping() {
         RequestMappingHandlerMapping requestMappingHandlerMapping = super.requestMappingHandlerMapping();
@@ -103,8 +106,26 @@ class WebMvcConfig extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ThymeleafLayoutInterceptor());
     }
-    
-    
+
+
+    /*
+     * Define a resolver which will allow a RecordMetaData object to be used as a parameter
+     *  in a request handler.
+    */
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(resolver());
+    }
+
+    @Bean
+    public HandlerMethodArgumentResolver resolver() {
+        return new RecordMetaDataResolver();
+    }
+
+
+
+
     /**
      * Handles favicon.ico requests assuring no <code>404 Not Found</code> error is returned.
      */
@@ -115,5 +136,5 @@ class WebMvcConfig extends WebMvcConfigurationSupport {
             return "forward:/resources/images/A4-16.png";
         }
     }
-    
+
 }

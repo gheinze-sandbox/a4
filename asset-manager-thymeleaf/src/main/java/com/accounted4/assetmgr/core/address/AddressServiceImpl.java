@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,9 +42,9 @@ public class AddressServiceImpl implements AddressService {
         String result = "";
         
         try {
-                result = objectMapper.writeValueAsString(resultSet);
-            System.out.println(result);
+            result = objectMapper.writeValueAsString(resultSet);
         } catch (IOException ex) {
+            throw new DataAccessException("Failure converting an address list to json format", ex) {};
         }
         
         return result;

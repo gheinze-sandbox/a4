@@ -2,6 +2,7 @@ package com.accounted4.assetmgr.core.party;
 
 import com.accounted4.assetmgr.config.ViewRoute;
 import com.accounted4.assetmgr.core.ConsumerServiceWrapper;
+import com.accounted4.assetmgr.core.RecordMetaData;
 import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.core.address.AddressService;
 import com.accounted4.assetmgr.support.web.Layout;
@@ -176,22 +177,18 @@ public class PartyController {
     
     public ModelAndView savePartyAddress(
             @ModelAttribute PartyForm partyForm
-            ,@Valid @ModelAttribute AddressForm addressForm
-            ,@RequestParam long modalAddressId
-            ,@RequestParam int modalAddressVersion
+            ,@ModelAttribute @Valid  AddressForm addressForm
+            ,RecordMetaData addressRecordMetaData
             ,Errors errors) {
         
         if (errors.hasErrors()) {
             return new ModelAndView(ViewRoute.PARTY);
         }
         
-        if (modalAddressId > 0L) {
-            // Update mode
-            addressForm.getRecordMetaData().setId(modalAddressId);
-            addressForm.getRecordMetaData().setVersion(modalAddressVersion);
+        if (addressRecordMetaData.isEditMode()) {
+            addressForm.setRecordMetaData(addressRecordMetaData);
             addressService.updateAddress(addressForm);
         } else {
-            // Insert mode
             partyService.addAddressToParty(partyForm, addressForm);
         }
         

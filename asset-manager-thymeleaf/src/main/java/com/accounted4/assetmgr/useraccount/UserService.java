@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         
-        String fullyQualifiedUsername = (new AccountName(username).getFullyQualifiedName());
+        String fullyQualifiedUsername = new AccountName(username).getFullyQualifiedName();
         
         UserAccount userAccount = userAccountRepository.findByFullyQualifiedAccountName(fullyQualifiedUsername);
         
@@ -142,8 +142,8 @@ public class UserService implements UserDetailsService {
             
             
             int splitLocation = strippedAccountName.lastIndexOf(ORG_SPLIT_TOKEN);
-            unqualifiedName = (splitLocation < 0) ? strippedAccountName : strippedAccountName.substring(0, splitLocation);
-            orgName = (splitLocation < 0) ? DEFAULT_ORG_NAME : strippedAccountName.substring(splitLocation + 1);
+            unqualifiedName = splitLocation < 0 ? strippedAccountName : strippedAccountName.substring(0, splitLocation);
+            orgName = splitLocation < 0 ? DEFAULT_ORG_NAME : strippedAccountName.substring(splitLocation + 1);
         }
      
         

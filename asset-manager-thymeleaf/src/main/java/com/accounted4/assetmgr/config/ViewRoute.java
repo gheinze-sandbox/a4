@@ -13,15 +13,15 @@ package com.accounted4.assetmgr.config;
  */
 public interface ViewRoute {
 
-    static final String HOME_SIGNED_IN     = "/core/auth/homeSignedIn";
-    static final String HOME_NOT_SIGNED_IN = "/core/auth/homeNotSignedIn";
-    static final String SIGN_IN            = "/core/auth/signin";
-    static final String SIGN_UP            = "/core/auth/signup";
+    String HOME_SIGNED_IN = "/core/auth/homeSignedIn";
+    String HOME_NOT_SIGNED_IN = "/core/auth/homeNotSignedIn";
+    String SIGN_IN = "/core/auth/signin";
+    String SIGN_UP = "/core/auth/signup";
     
-    static final String GENERAL_ERROR      = "/error/general";
+    String GENERAL_ERROR = "/error/general";
     
-    static final String SELECT_LIST        = "/fragments/selectList";
+    String SELECT_LIST = "/fragments/selectList";
     
-    static final String PARTY              = "/core/contact/party";
+     String PARTY = "/core/contact/party";
     
 }

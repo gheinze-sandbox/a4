@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<!--/*/
+
+The "metaDataFields" fragment: insert hidden fields representing a RecordMetaDataObject.
+Works in tandem with the RecordMetaDataResolver for generating a RecordMetaData ModelAttribute.
+
+/*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Notes</title>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+        <link href="../../../resources/css/summernote.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/summernote.min.css}"/>
+    </head>
+
+    <body>
+        
+        <!--/* The replaceable fragment */-->
+        <div id="metaDataFields" th:fragment="metaDataFields">
+            
+            <div>
+                <input type="hidden" id="metaData.id" name="metaData.id" />
+                <input type="hidden" id="metaData.version" name="metaData.version"/>
+                <input type="hidden" id="metaData.inactive" name="metaData.inactive"/>
+                <input type="hidden" id="metaData.editMode" name="metaData.editMode"/>
+            </div> 
+
+        </div>
+    
+    </body>
+    
+</html>

@@ -39,7 +39,7 @@ public class ResultCheckingJdbcTemplate extends NamedParameterJdbcTemplate{
      */
     public long saveAndReturnKey(String sql, SqlParameterSource paramSource) throws DataAccessException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        update(sql, paramSource, keyHolder, RecordMetaData.keyColumn);
+        update(sql, paramSource, keyHolder, new String[] {RecordMetaData.KEY_COLUMN_NAME});
         return keyHolder.getKey().longValue();
     }
     

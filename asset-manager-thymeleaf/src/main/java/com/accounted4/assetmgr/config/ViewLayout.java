@@ -9,6 +9,6 @@ package com.accounted4.assetmgr.config;
  * See: http://blog.codeleak.pl/2013/11/thymeleaf-template-layouts-in-spring.html
  */
 public interface ViewLayout {
-    static final String DEFAULT = "core/layouts/default";
-    static final String VANILLA = "core/layouts/vanilla";
+    String DEFAULT = "core/layouts/default";
+    String VANILLA = "core/layouts/vanilla";
 }

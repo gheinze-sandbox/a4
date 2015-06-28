@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 public class RecordMetaData {
 
-    public static final String[] keyColumn = new String[] {"id"};
+    public static final String KEY_COLUMN_NAME = "id";
     
     
     @Getter @Setter

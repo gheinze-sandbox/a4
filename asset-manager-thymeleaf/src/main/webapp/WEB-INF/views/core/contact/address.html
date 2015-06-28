@@ -93,17 +93,17 @@ The content for this page is relates to defining an addresses.
                                         <input type="text" class="form-control" id="note" placeholder="Note" th:field="*{note}" />
                                     </div>
                                 </div>
+                                
+                                <input type="hidden" name="countryCode" id="countryCode" value="CA"/>
+
+                                <div th:replace="fragments/metaDataFields :: metaDataFields">Record Meta Data</div>
 
                             </fieldset>
                             
-                            <input type="hidden" name="countryCode" id="countryCode" value="CA"/>
-                            <input type="hidden" name="modalAddressId" id="modalAddressId" value="0"/>
-                            <input type="hidden" name="modalAddressVersion" id="modalAddressVersion" value="0"/>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" name="saveAddressAction" value="saveAddress">Save Address</button>
-                        <button type="button" class="btn btn-warning" data-dismiss="modal" name="closeAddressAction" value="closeAddress">Close</button>
-                    </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success" name="saveAddressAction" value="saveAddress">Save Address</button>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal" name="closeAddressAction" value="closeAddress">Close</button>
+                            </div>
                     
 
                     </div>

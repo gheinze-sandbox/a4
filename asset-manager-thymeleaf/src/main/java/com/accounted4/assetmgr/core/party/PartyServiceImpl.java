@@ -6,7 +6,6 @@ import com.accounted4.assetmgr.core.address.AddressForm;
 import com.accounted4.assetmgr.core.address.AddressRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,12 +70,12 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public void addAddressToParty(PartyForm partyForm, AddressForm addressForm) {
         long addressId = addressRepository.save(addressForm);
-        partyRepository.addAddressToParty(partyForm, addressId);
+        attachAddressToParty(partyForm, addressId);
     }
 
     @Override
     public void removeAddressFromParty(PartyForm partyForm, long selectedAddressId) {
-        partyRepository.removeAddressFromParty(partyForm, selectedAddressId);
+        partyRepository.detachAddressFromParty(partyForm, selectedAddressId);
     }
 
     @Override

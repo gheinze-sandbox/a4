@@ -24,6 +24,8 @@
         <assertj-core-version>1.5.0</assertj-core-version>
         <jsdialect.version>1.0.2</jsdialect.version>
         <findbugs.version>3.0.1</findbugs.version>
+        <pmd.version>3.4</pmd.version>
+        <checkstyle.version>2.15</checkstyle.version>
         <javadoc.version>2.10.3</javadoc.version>
         <asciidoctor.version>1.5.2</asciidoctor.version>
         <asciidoclet.version>${asciidoctor.version}</asciidoclet.version>
@@ -336,7 +338,26 @@
                 </configuration>
             </plugin>
 
-            <!-- Javadocs 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${pmd.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            
+  <!-- Javadocs 
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

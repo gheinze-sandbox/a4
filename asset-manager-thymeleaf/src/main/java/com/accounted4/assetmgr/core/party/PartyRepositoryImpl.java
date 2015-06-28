@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 
@@ -143,22 +141,12 @@ public class PartyRepositoryImpl implements PartyRepository {
      */
 
     
-    private static final String ADD_ADDRESS_TO_PARTY =
-            "INSERT INTO party_address(org_id, party_id, address_id) VALUES(:orgId, :partyId, :addressId)";
-    
-    @Override
-    public void addAddressToParty(PartyForm partyForm, long addressId) {
-        executeDml(ADD_ADDRESS_TO_PARTY, partyForm, addressId);
-    }
-
-
-    
-    private static final String REMOVE_ADDRESS_FROM_PARTY =
+    private static final String DETACH_ADDRESS_FROM_PARTY =
             "DELETE FROM party_address WHERE org_id = :orgId AND party_id = :partyId AND address_id = :addressId";
     
     @Override
-    public void removeAddressFromParty(PartyForm partyForm, long addressId) {
-        executeDml(REMOVE_ADDRESS_FROM_PARTY, partyForm, addressId);
+    public void detachAddressFromParty(PartyForm partyForm, long addressId) {
+        executeDml(DETACH_ADDRESS_FROM_PARTY, partyForm, addressId);
     }
 
     
