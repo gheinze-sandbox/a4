@@ -9,6 +9,17 @@ import javax.servlet.*;
 /**
  * Register and configure the DispatcherServlet which performs the routing
  * of the incoming request to the appropriate @Controller handler.
+ * Creates both a DispatcherServlet and a ContextLoadListener.
+ *
+ * The DispatcherServlet loads the application context with beans defined in the WebConfig config class
+ * (beans containing web components such as controllers, view resolvers, handler mappings)
+ * These are defined in WebMvcConfig.java
+ *
+ * The ContextLoadListener is expected to load other beans such as middle tier and data tier components.
+ * These are defined in ApplicationConfig.java
+ *
+ * Servlet 3.0 container will scan classpath for implementations of javax.servlet.ServletContainerInitializer
+ * and use that for  servlet configuation. This is a Spring implementation of the Initializer.
  */
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
