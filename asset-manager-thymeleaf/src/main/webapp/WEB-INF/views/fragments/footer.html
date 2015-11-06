@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<!--/*
+
+The "footer" fragment: the "footer" div will be inserted into the "footer"
+section of the active layout.
+
+The content for this page is the copyright message.
+
+*/-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Footer</title>
+        <link href="../../../resources/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+    </head>
+    
+    <body>
+        <div th:fragment="footer">
+            <footer>
+                &copy; 2015 <a href="/" th:href="@{/}" th:text="#{application.company}">Accounted4</a>
+            </footer>
+        </div>
+    </body>
+    
+</html>
+

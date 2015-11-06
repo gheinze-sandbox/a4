@@ -1,0 +1,40 @@
+== Securities Management Module
+
+=== Securities Management Overview
+
+.Attributes by Security Type
+|===
+|Attribute          |Stock  |Debenture  |Preferred  |Option
+
+|Symbol             |x      |x          |x          |
+|Company            |x      |x          |x          |x
+|Average Purchase Price
+                    |x	    |x          |x          |
+|Shares             |x      |x          |x          |
+|Money In           |x      |x          |x          |
+|Market Price       |x      |x          |x          |
+|Rate               |       |x          |x          |	 
+|Issue Date         |       |x          |x          |
+|Maturity Date      |       |x          |           |
+|Conversion Date    |       |x          |           |
+|Redemption Date    |       |x          |x          |	 
+|Payment Dates      |       |x          |           |	 	 
+|Underlying Symbol  |       |           |x          |x
+|Underlying Symbol Market Price
+                    |       |x          |           |x
+|Conversion Price   |       |x          |           |	 	 
+|Effective Rate     |       |x          |           |
+|Prospectus url     |       |x          |x          |	 
+|DBRS rating        |       |x  	 	|           |
+|Notes              |x      |x          |x          |x 
+|Last Dividend Amount
+                    |x      |           |x          |
+|Dividend Dates     |x      |           |x          |
+|Face Value         |       |           |x          |
+|Option Type (call or put) ||           |           |x
+|Bought or Sold     |       |           |           |x
+|Premium            |       |           |           |x
+|Contracts          |       |           |           |x
+|Strike Price       |       |           |           |x
+|Underlying Symbol Price at purchase
+                    |       |           |           |x

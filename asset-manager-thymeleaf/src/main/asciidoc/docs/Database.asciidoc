@@ -1,0 +1,258 @@
+== Database
+
+=== Postgresql
+
+==== Architecture Overview
+
+*`postgres`* is the database server process. Each client connection is forked off into a separate `postgress` process.
+`postmaster` is a deprecated alias for `postgres`.
+
+A `cluster` is a collection of databases, residing at a single file location and managed by a single `postgres` instance.
+The location of the database files can be found at `$PGDATA`.
+
+`initdb` is used to create a new database cluster (do not execute as root, see man page). When the database
+is being installed as a package, `initdb` is typically already run as part of the installation process. Part of this
+process includes generating the shared catalog tables (tables that don't belong to any particular database such
+as pg_database, pg_tablespace, and user/role related tables).
+
+`initdb` is not run as the root user. Since a cluster has not been initialized yet, there is no database and
+hence no database user under which this command can be run. Instead, os authentication is used. The
+os account under which `initdb` is run (typically the `postgres` os user) is considered the privileged user
+which may connect and run the executables.
+
+Three databases are created by default with `initdb`:
+
+* `template0` contains the standard objects for this version of the db. It provides a means to revert `template1`.
+
+* `template1` each new db is created as a copy of this template db. Objects, extensions, tables, etc that are
+added to `template1` will also be part of any subsequently created db.
+
+* `postgresql` typically the initial db created based off of `template1` and named after the os user under which the db was installed.
+
+`createdb` is used to create a new database in the cluster, typically for a separate project or separate user.
+Without parameters, it will create a db with the same name as the os user issuing the command.
+
+[source,sql]
+----
+createdb mydb;
+----
+
+or
+
+[source,sql]
+----
+postgres% psql -U postgres -c "CREATE DATABASE mydb" -d template1
+
+postgres% psql -U postgres -c "DROP DATABASE mydb" 
+----
+
+
+`PGDATA` (ex /var/lib/postgresql/9.4/main) contains the db files:
+
+[options="header"]
+[cols="20,80"]
+|=======================
+|File|Description
+|PG_VERSION| A file containing the major version number of PostgreSQL
+|base| Subdirectory containing per-database subdirectories
+|global| Subdirectory containing cluster-wide tables, such as pg_database
+|=======================
+
+==== Accounted4 Database assumptions
+
+.`src/main/sql/create_schema.sh`
+
+The schema creation script is launched via the script `src/main/sql/create_schema.sh` with the following line:
+
+[source,bash]
+----
+psql -p 5432 -e a4 postgres
+----
+
+This assumes:
+
+* the OS user launching the script has permission to run the Postresql executable `psql`
+* the postgres server is listening on port 5432
+* a database named `a4` exists
+* the `postgres` user will be used to connect to the `a4` database
+
+The application can be run under any database by switching `a4` to any database you have pre-created.
+
+The `postgres` user is chosen because it most typically matches the OS user under which the Postgresql
+installation was performed.  If Postgresql was installed under a different OS user, then change `postgres` to
+match the OS user of installation.  This will allow "Peer Authentication" (i.e. using the OS user for authentication).
+
+If the desire is to operate under a database user rather than an OS user, the following steps must be taken:
+
+* the user must be created on the cluster: `CREATE ROLE a4 LOGIN PASSWORD ''a4'';`
+* connect privilege must be given to the user: `GRANT CONNECT ON DATABASE a4 TO a4;`
+* `pg_hba.conf` must be configured to support password authentication. i.e. change:
+
+[source]
+----
+local   all             postgres                                peer
+----
+
+to
+
+[source]
+----
+local   all             postgres                                md5
+----
+
+.`src/main/sql/system/create_schemas.sql`
+
+The `create_schemas.sql` script includes these operations within the connected db:
+
+* create the user `a4`
+* create a schema `a4`
+
+.`src/main/sql/system/switch_user_to_a4.sql`
+
+At this point, the currently connected user has the search path altered to search the `a4` schema (i.e. namespace)
+first for objects:
+
+[source,sql]
+----
+SET search_path=a4,audit,public;
+----
+
+It also changes the session user identifier so that further commands can operate as if logged in as the `a4` user:
+
+[source,sql]
+----
+SET SESSION AUTHORIZATION 'a4';
+----
+
+.jdbc connections
+
+The web application connects to the Postgresql database via jdbc.  It looks for configuration in the file
+`src/main/resources/persistence.properties`. Note the host, port, and database name in the url, along with the
+OS username and password for connecting to the database:
+
+[source]
+----
+dataSource.driverClassName=org.postgresql.ds.PGSimpleDataSource
+dataSource.url=jdbc:postgresql://127.0.0.1:5432/a4
+dataSource.username=postgres
+dataSource.password=postgres
+----
+
+==== Postgres tips
+
+.Show the directory containing the database files.
+[source,sql]
+----
+show data_dictionary;
+----
+
+or search for the file `postgresql.conf` for more details
+
+.Connect to a database
+[source,sql]
+----
+psql [dbname] [username]
+----
+
+.List databases
+[source,sql]
+----
+postgres=# select datname from pg_database order by 1;
+  datname  
+-----------
+ a4
+ postgres
+ template0
+ template1
+(4 rows)
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ a4        | postgres | UTF8     | en_CA.UTF-8 | en_CA.UTF-8 | 
+ postgres  | postgres | UTF8     | en_CA.UTF-8 | en_CA.UTF-8 | 
+ template0 | postgres | UTF8     | en_CA.UTF-8 | en_CA.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_CA.UTF-8 | en_CA.UTF-8 | postgres=CTc/postgres+
+           |          |          |             |             | =c/postgres
+(4 rows)
+----
+
+.List Users
+[source,sql]
+----
+postgres=# \du
+                                List of roles
+    Role name    |                   Attributes                   | Member of 
+-----------------+------------------------------------------------+-----------
+ a4              |                                                | {}
+ postgres        | Superuser, Create role, Create DB, Replication | {}
+ spring_security |                                                | {}
+----
+
+.Network Access to db
+
+Note that the "-i" option was used when starting postmaster in order to allow internet (tcp) connections rather than just local connections. To allow external connections, the host access control file, pg_hba.conf (located in the $PGDATA directory), must be modified by adding a line such as the following: 
+
+[source,sql]
+----
+# TYPE       DATABASE    IP_ADDRESS    MASK                AUTHTYPE  MAP 
+host         all         10.0.0.0      255.0.0.0           password 
+----
+
+which would allow hosts from the 10.0.0.0 subnet access to all databases in this database system.  The localhost has been setup with AUTHTYPE "trusted" by default, but this can be changed if you want to enforce local user to use a password as well. 
+  
+.Search Path
+
+[source,sql]
+----
+postgres=# select usename, usecreatedb, useconfig from pg_shadow;
+     usename     | usecreatedb |         useconfig          
+-----------------+-------------+----------------------------
+ a4              | f           | 
+ postgres        | t           | {"search_path=a4, public"}
+ spring_security | f           | 
+(3 rows)
+----
+
+.Restart the Postgres service
+[source,bash]
+----
+sudo service postgresql restart
+----
+
+
+=== Conventions
+
+The conventions are provided primarily for consistency sake.  Some of the reasoning behind the choice is provided with the convention.
+
+
+* *Table names singular*
+Plural names would make names longer. A table is a container or bag holding multiple items.
+
+* *Table names lowercase*
+When writing SQL, keywords are often denoted in UPPER CASE. Leaving table names in lower case helps the visibility in SQL statements.
+
+* *Table names fully spelled out when possible*
+Spelling a name like "USER" fully will be more clear than "USR". Mapping tables may result in table names which are too long and truncation is forced. In this case, truncate consistently (remove vowels, chose only 3 letters for a table, etc).
+
+* *Always have a surrogate key or uuid*
+The business key can be unique, multi-part, and have meaning. The surrogate key is used for internal purposes.
+
+* *Column: Primary key "id" should be named <table_name>_id*
+_id_ would be sufficient, but it leaves joins in SQL statements less clear. i.e. if we assume table `user` is aliased by `a` and a table aliased by `b` has a fk reference to `a`, then `a.user_id = b.user_id` is more clear than `a.id = b.user_id`. So table `use`" should have a `user_id` rather than just `id` for the pk. If table inheritance or generation tools are to be used, having a consistent `id` as the pk for all tables might make more sense.
+
+* *Use underscores (`_`) to separate words in names*
+For example `USER_ACCOUNT`
+
+
+* *Explicit join notation should be used*
+For example: `SELECT * FROM tablea a JOIN tableb b ON (a.tablea_id = b.tablea_id)`  It is the preferred convention, it makes join syntax more clear, it allows easier removal of joined parts when debugging.
+
+* *DML through stored procedures*
+The primary reason for using stored procedures to interface with the data tables is to provide the ability to change the implementation (ie table structures) without necessarily changing the api. Putting business logic into the stored procedure is not the goal and can be left for the middle tier.
+
+=== Auditing
+
+=== Name spacing via schemas

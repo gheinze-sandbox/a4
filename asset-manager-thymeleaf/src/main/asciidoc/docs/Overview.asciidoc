@@ -1,0 +1,91 @@
+== Overview
+
+Accounted4 is an asset management system targeted for small businesses. The foundation of the application
+is a general accounting system upon which business applications can be added in a modular fashion. The
+application can be broken into logical modules:
+
+* *CORE*: authentication, user account administration, notification engine, error handling, auditing, etc
+* *GL*: an accounting subsystem based on tags, financial libraries
+* *MTG*: a mortgage management subsystem to support lenders and mortgage brokers in keeping track of loans, payments, expenses, events, etc
+* *SEC*: security management subsystem for tracking assets such as:
+** shares
+** preferred shares
+** bonds
+** debentures
+** options
+* *PM* property management, rent collection, TIM
+
+=== General Principles
+
+The following general concepts should be kept in mind:
+
+.Each module exposes a service layer api
+This allows for the development of various clients (web, mobile, thick) and also allows for scripting and batching operations to be performed.
+
+.Records should be versioned to avoid concurrent access clobbering
+The client should be considered disconnected from the server. Any data on the client may be stale by the time the client calls a server-side service to send revised data back. By versioning each record, the service layer can ensure the record has not been changed by another session.
+
+.A notification engine should be regularly polled
+Event notification is a core feature of the application. Modules register system and custom events with the notification engine and the client regularly polls the notification engine for updates.
+
+.Application Security should be applied at the service level and at the data level
+The application restricts access to services and also restricts access to the data that may be returned from services based on roles. Spring Security is used to control access to services and data. The security data is stored in a backing database.
+
+.Communication between the client and server should use Restful services over https
+All data communication should be over https.
+
+==== Things to think about when checking in code:
+
+* *Robustness*: are the units simple, clear, tested, and unlikely to break?
+* *Maintainability*
+* *Performance*
+* *Scalability*: can we design in such a way that when we need more processing power we can simply slap in another machine and start up another instance (joining a cluster?)  Allows for failure of single components.
+* *Reliability*
+* *Testability* can the unit be easily tested in isolation with mocked components?
+* *efficient use of hardware resources*
+* *Reduce code redundancy*
+* *Portability*: reduce system dependencies
+* *Prefer RAM to File IO*
+* *Recoverability*: application should clean up state after a failure
+* *Metrics* inevitably there will be a request for metrics, incorporate into system to start, perhaps through a special logger, in a machine readable format
+* *Documentation*:  can it be built into the system in order to create dynamic docs
+* *Automation*
+* *Logging*
+* *Security*
+
+=== Technology
+
+.Scaffolding
+
+* *git* for version control
+* *maven* for builds and dependency management
+* *json* for inter-component communication
+* *asciidoctor* for documentation both outside and within javadocs
+* *dia* for diagrams
+
+.Java
+
+* *Java 8* for server side development
+* *Spring* for Restful services, security, dependency injection container
+* *Spring Security* for authentication and authorization
+* *JasperReports* for pdf report generation
+* *junit* for testing
+* *mockito* as the mocking library for unit testing
+* *slf4j* as the logging facade
+* *lombok* to reduce bean boilerplate
+
+.Database
+
+* *Postgresql 9.4* as the relational datastore
+
+.Client
+
+* *Thymeleaf* for view templates
+
+.JavaScript Libraries
+
+* http://momentjs.com/[Moment] Parse, validate, manipulate, and display dates
+* http://fortawesome.github.io/Font-Awesome/[Font Awesome] Fonts and icons
+* http://modernizr.com/[Modernizr] Browser compatibility of features
+* ckeditor
+* selectize

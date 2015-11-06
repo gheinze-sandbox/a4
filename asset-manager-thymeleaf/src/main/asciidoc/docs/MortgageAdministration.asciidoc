@@ -1,0 +1,23 @@
+== Mortgage Administration Module
+
+=== Mortgage Administration Overview
+
+* Party definition (core, gl?)
+* Asset definition
+* Mortgage definition
+* Payments and charges
+
+==== Events
+A notification window will be available to remind the user of upcoming events. For example:
+
+* deposit due
+* mortgage renewal
+* cheques required
+* verify property taxes paid on a property
+
+The events are specific to an owner. They will remain in the notification window until acknowledged. Ideally there would be a link to the action which handles the event.
+
+The event has a category, due date, message, and action link.
+
+The events can be system generated or custom created. The definition of the event needs to specify the number of days advance notification required. It should also allow for the definition of recurring events.
+
